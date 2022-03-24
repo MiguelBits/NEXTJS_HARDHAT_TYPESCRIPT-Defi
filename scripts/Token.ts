@@ -21,8 +21,18 @@ const main = async(): Promise<any> => {
 
   await tokenizer.saveThatMoney()
 
-  balance = await tokenizer.balanceOf(signers[0].address)
-  console.log("New Token Balance: "+balance.toString())
+  const tokenizer2 = await new UnderlyingToken__factory(signers[0]).deploy("BTC","BTC")
+
+  console.log("Coin deployed at: "+tokenizer2.address)
+  console.log("Account: "+signers[0].address)
+
+  let balance2 = await tokenizer2.balanceOf(signers[0].address)
+
+  console.log("Token Balance is: "+balance2.toString())
+
+  await tokenizer.saveThatMoney()
+  balance2 = await tokenizer2.balanceOf(signers[0].address)
+  console.log("New Token2 Balance2: "+balance2.toString())
 
   var timestamp = Math.round(new Date().getTime() / 1000); //get timestamp for now
   timestamp += 3600*24; //now + 24h
@@ -68,7 +78,7 @@ const main = async(): Promise<any> => {
 
   let MyTokenPrice = await optionsFactory.getLatestPrice(tokenizer.address);
   console.log("The Token is valued at: "+ MyTokenPrice.toString())
-
+/*
   console.log("\nWill now Exercise Options\n")
   //exercise Option
   await optionsFactory.exerciseOption(tokenizer.address,"500000000000000000", { value: strikePrice }) // exercise 0.5ether of token, send ether value to pay it
@@ -86,7 +96,7 @@ const main = async(): Promise<any> => {
   console.log("Factory => Underlying Token Balance " + ether_factoryBalance.toString())
   let finalBalance = await tokenizer.balanceOf(signers[0].address)
   console.log("My Final Token Balance: "+ ethers.utils.parseEther(finalBalance.toString()).toString())
-
+*/
 }
 
 main()
