@@ -83,16 +83,16 @@
   }
 }
 
-.pricesContainer{
+.rightContainer{
   position: fixed;
   top: 0.3%;
   right: 0%;
   display: flex;
 }
 
-.home_icon{
+.leftContainer{
   position: fixed;
-  top: 1.5%;
+  top: 0.5%;
   left: 5%;
   display: flex;
 }
