@@ -117,34 +117,14 @@
 
 .pricesContainer{
   position: fixed;
-  top: 3%;
-  right: 10%;
+  top: 0.3%;
+  right: 5%;
   display: flex;
-}
-
-.prices{
-  position: relative;
-  padding: 1% 1% 1%;
-  margin: 5% 15% 5% 5%;
-  width: 200%;
-  font-family: Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono,
-    Bitstream Vera Sans Mono, Courier New, monospace;
-  text-align: center;
-  white-space: nowrap;
-}
-.prices:after {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -15%;
-  right: -15%;
-  bottom: -50%;
-  border-radius: 10px;
-  border: 2px solid #73AD21;
 }
 
 .balance{
   position: fixed;
-  top: 1.8%;
-  left: 10%;
+  top: 1.5%;
+  left: 5%;
+  display: flex;
 }

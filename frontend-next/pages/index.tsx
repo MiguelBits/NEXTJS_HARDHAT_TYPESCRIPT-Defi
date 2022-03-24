@@ -1,6 +1,8 @@
 import React from 'react';
 import { toast } from 'react-toastify';
 
+declare let window: any
+
 class ConnectWallet extends React.Component {
     state = {
         currentAccount: null,

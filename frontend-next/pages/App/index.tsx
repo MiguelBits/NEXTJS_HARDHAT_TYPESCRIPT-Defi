@@ -4,15 +4,15 @@ import Image from 'next/image'
 import styles from '../../styles/Home.module.css'
 import { ethers } from 'ethers';
 import {tokenAddress, token2Address, tokenABI, factoryAddress, factoryABI, erc20ABI} from "./../contracts_abi"
-import {ConnectWallet} from "./../../components/ConnectWallet";
+import { toast } from 'react-toastify';
+import { FaEthereum } from "react-icons/fa";
+import { AiOutlineMenuUnfold } from "react-icons/ai";
 
 declare let window: any
 
 export default class Home extends React.Component {
   state = {
-    tokens: ["BTC", "LINK"],
-    balance: [],
-    prices: [],
+    currentAccount: null,
     network: {
       avalancheFuji: {
           chainId: `0x${Number(43113).toString(16)}`,
@@ -25,7 +25,12 @@ export default class Home extends React.Component {
           rpcUrls: ["https://api.avax-test.network/ext/bc/C/rpc"],
           blockExplorerUrls: ["https://testnet.snowtrace.io/"]
       }
-    }
+    },
+
+    tokens: ["BTC", "LINK"],
+    balance: [],
+    prices: [],
+    
   }
 
   componentDidMount = () => {
@@ -45,7 +50,45 @@ export default class Home extends React.Component {
         console.log(err)
       }
   };
+  checkWalletIsConnected = async () => {
+    const { ethereum } = window;
 
+    if (!ethereum) {
+        console.log("Make sure you have Metamask installed!");
+        return;
+    } else {
+        console.log("Wallet exists! We're ready to go!")
+    }
+
+    const accounts = await ethereum.request({ method: 'eth_accounts' });
+
+    if (accounts.length !== 0) {
+        const account = accounts[0];
+        console.log("Found an authorized account: ", account);
+        this.setState({currentAccount: account});
+    } else {
+        console.log("No authorized account found");
+    }
+      
+  }
+
+  connectWalletHandler = async () => {
+      const { ethereum } = window;
+
+      if (!ethereum) {
+          toast.error("Please install Metamask!");
+      }
+
+
+      try {
+          const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+          toast.success("Found an account! Address: "+ accounts[0].slice(0,6) + "..."+accounts[0].slice(38,43));
+          this.setState({accounts:accounts[0]});
+      } catch (err) {
+          console.log(err)
+      }
+      
+  }
   balanceToken = async () =>{
     const { ethereum } = window;
       if (ethereum) {
@@ -116,7 +159,6 @@ export default class Home extends React.Component {
         </Head>
         
         <main className={styles.main}>
-          <ConnectWallet></ConnectWallet>
           <h1 className={styles.title}>
             Welcome to <a href="https://nextjs.org">Dopex!</a>
           </h1>
@@ -124,16 +166,26 @@ export default class Home extends React.Component {
           <div className={styles.pricesContainer} >
             {this.state.tokens.map((item,i) => {
               return(
-                <div key={i} className={styles.prices} onClick={(item) => {this.mintToken(item)}}>
-                  {item} <a className={styles.pricesInside}>{this.state.prices[i]}Ξ</a>
+                <div key={i} className="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-400 to-blue-600 group-hover:from-green-400 group-hover:to-blue-600 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800" onClick={(item) => {this.mintToken(item)}}>
+                  <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md ">
+                    {item} {this.state.prices[i]} / <FaEthereum className='inline'/>
+                  </span>
                 </div>)
             })}
+            <div className={styles.changeNetwork}>
+              <button className="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-pink-500 to-orange-400 group-hover:from-pink-500 group-hover:to-orange-400 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-pink-200 dark:focus:ring-pink-800">
+                <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+                    Connect to Avalanche
+                </span>
+              </button>          
+            </div>
+            <button>
+              <a href="/"> <AiOutlineMenuUnfold ></AiOutlineMenuUnfold> </a>
+            </button>
           </div>
+
           <div className={styles.balance}>
             <p>Balance: {this.state.balance}</p>
-          </div>
-          <div className={styles.changeNetwork}>
-            <button onClick={this.handleNetworkSwitch} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"> Avalanche </button>
           </div>
   
           <p className={styles.description}>
@@ -145,6 +197,8 @@ export default class Home extends React.Component {
   
             <a href="https://nextjs.org/learn" className={styles.card}>
               <h2>Learn &rarr;</h2>
+              
+
               <p>Learn about Next.js in an interactive course with quizzes!</p>
             </a>
   
@@ -154,7 +208,7 @@ export default class Home extends React.Component {
             >
               <h2>Examples &rarr;</h2>
               <p>Discover and deploy boilerplate example Next.js projects.</p>
-            </a>
+            </a> 
   
             <a
               href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
