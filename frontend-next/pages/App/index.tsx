@@ -216,7 +216,7 @@ export default class Home extends React.Component {
               return(
                 <a className={styles.card}>
                   <h2>{item}
-                    <span className=" bg-green-100 text-green-800 text-xs font-semibold ml-24 px-2.5 py-0.5 rounded dark:bg-green-200 dark:text-green-900">Calls</span>  
+                    <span className=" bg-green-100 text-green-800 text-xs font-semibold ml-24 px-2.5 py-0.5 rounded dark:bg-green-200 dark:text-green-900">CALLS</span>  
                   </h2>
                   <ul className='ml-5 flex flex-wrap font-medium text-center text-gray-500'>
                     <li className='mr-2'>
@@ -235,22 +235,35 @@ export default class Home extends React.Component {
                 </a>
               )
             } )}
-  
           </div>
+          <div className={styles.grid}>
+            {this.state.tokens.map( (item,i) => {
+              return(
+                <a className={styles.card}>
+                  <h2>{item}
+                    <span className=" bg-red-100 text-red-800 text-xs font-semibold ml-24 px-2.5 py-0.5 rounded dark:bg-red-200 dark:text-red-900">PUTS</span>  
+                  </h2>
+                  <ul className='ml-5 flex flex-wrap font-medium text-center text-gray-500'>
+                    <li className='mr-2'>
+                      <a className="inline-block p-4 text-blue-600 bg-gray-100 rounded-md active dark:bg-gray-800 dark:text-blue-500">
+                        TVL:
+                      </a>
+                    </li>
+                    <li className="mr-2">
+                        <a className="inline-block p-4 text-blue-600 bg-gray-100 rounded-md active dark:bg-gray-800 dark:text-blue-500">Deposits:</a>
+                    </li>
+                  </ul>
+                  <p className={styles.epoch}>Epoch: {this.state.strikesDeadline[i]}</p>
+                  <button className='mt-5 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800'>
+                    <a href={"/Options/"+item}>Manage</a>
+                  </button>
+                </a>
+              )
+            } )}
+          </div>
+
         </main>
-        
-        <footer className={styles.footer}>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Powered by{' '}
-            <span className={styles.logo}>
-              <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
-            </span>
-          </a>
-        </footer>
+  
       </div>
     )
   }
