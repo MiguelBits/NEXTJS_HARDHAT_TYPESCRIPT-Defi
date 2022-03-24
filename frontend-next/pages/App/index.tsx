@@ -6,7 +6,6 @@ import { ethers } from 'ethers';
 import {tokenAddress, token2Address, tokenABI, factoryAddress, factoryABI, erc20ABI} from "./../contracts_abi"
 import { toast } from 'react-toastify';
 import { FaEthereum } from "react-icons/fa";
-import { AiOutlineMenuUnfold } from "react-icons/ai";
 
 declare let window: any
 
@@ -202,13 +201,10 @@ export default class Home extends React.Component {
                 </span>
               </button>          
             </div>
-            <button>
-              <a href="/"> <AiOutlineMenuUnfold ></AiOutlineMenuUnfold> </a>
-            </button>
           </div>
 
-          <div className={styles.balance}>
-            <p>Balance: {this.state.balance}</p>
+          <div className={styles.home_icon}>
+            <a href="/App" className='font-black dark:text-white'>Home</a>
           </div>
   
           <div className={styles.grid}>
@@ -230,7 +226,7 @@ export default class Home extends React.Component {
                   </ul>
                   <p className={styles.epoch}>Epoch: {this.state.strikesDeadline[i]}</p>
                   <button className='mt-5 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800'>
-                    <a href={"/Options/"+item}>Manage</a>
+                    <a href={"/Calls/"+item}>Manage</a>
                   </button>
                 </a>
               )
@@ -255,7 +251,7 @@ export default class Home extends React.Component {
                   </ul>
                   <p className={styles.epoch}>Epoch: {this.state.strikesDeadline[i]}</p>
                   <button className='mt-5 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800'>
-                    <a href={"/Options/"+item}>Manage</a>
+                    <a href={"/Puts/"+item}>Manage</a>
                   </button>
                 </a>
               )
