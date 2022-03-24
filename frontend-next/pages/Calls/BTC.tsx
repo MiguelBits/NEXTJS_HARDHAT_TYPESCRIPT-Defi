@@ -1,5 +1,6 @@
 import React from 'react';
 import { toast } from 'react-toastify';
+import TopBar from '../../components/TopBar';
 
 declare let window: any
 
@@ -15,6 +16,7 @@ class BTC extends React.Component {
     render() {
       return (
         <div>
+          <TopBar></TopBar>
             <div className=''>
                 Hello
             </div>

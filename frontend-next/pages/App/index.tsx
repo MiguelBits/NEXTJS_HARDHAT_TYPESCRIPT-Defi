@@ -1,11 +1,9 @@
 import React from 'react'
 import Head from 'next/head'
-import Image from 'next/image'
 import styles from '../../styles/Home.module.css'
 import { ethers } from 'ethers';
 import {tokenAddress, token2Address, tokenABI, factoryAddress, factoryABI, erc20ABI} from "./../contracts_abi"
-import { toast } from 'react-toastify';
-import { FaEthereum } from "react-icons/fa";
+import TopBar from "../../components/TopBar"
 
 declare let window: any
 
@@ -36,79 +34,9 @@ export default class Home extends React.Component {
   }
 
   componentDidMount = () => {
-    this.balanceToken()
-    this.priceToken()
     //this.getDeadline()
   }
 
-  handleNetworkSwitch = async () => {
-    try {
-        if (!window.ethereum) throw new Error("No crypto wallet found");
-        let txn = await window.ethereum.request({
-          method: "wallet_addEthereumChain",
-          params: [this.state.network["avalancheFuji"]]
-        });
-        await txn.wait();
-      } catch (err) {
-        console.log(err)
-      }
-  };
-  checkWalletIsConnected = async () => {
-    const { ethereum } = window;
-
-    if (!ethereum) {
-        console.log("Make sure you have Metamask installed!");
-        return;
-    } else {
-        console.log("Wallet exists! We're ready to go!")
-    }
-
-    const accounts = await ethereum.request({ method: 'eth_accounts' });
-
-    if (accounts.length !== 0) {
-        const account = accounts[0];
-        console.log("Found an authorized account: ", account);
-        this.setState({currentAccount: account});
-    } else {
-        console.log("No authorized account found");
-    }
-      
-  }
-
-  connectWalletHandler = async () => {
-      const { ethereum } = window;
-
-      if (!ethereum) {
-          toast.error("Please install Metamask!");
-      }
-
-
-      try {
-          const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
-          toast.success("Found an account! Address: "+ accounts[0].slice(0,6) + "..."+accounts[0].slice(38,43));
-          this.setState({accounts:accounts[0]});
-      } catch (err) {
-          console.log(err)
-      }
-      
-  }
-  balanceToken = async () =>{
-    const { ethereum } = window;
-      if (ethereum) {
-        
-        const provider = new ethers.providers.Web3Provider(ethereum);
-        const signer = provider.getSigner();
-        const accounts = await provider.listAccounts();
-
-        const tokenContract = new ethers.Contract(tokenAddress, tokenABI, signer);
-        tokenContract.balanceOf(accounts[0]).then((balance:any) =>{
-          console.log(ethers.utils.formatEther(balance))
-          this.setState({balance:ethers.utils.formatEther(balance)})
-        })
-      }else{
-        console.log("Ethereum object does not exist");
-      }
-  }
   mintToken = async (item:any) =>{
     const { ethereum } = window;
       if (ethereum) {
@@ -132,25 +60,7 @@ export default class Home extends React.Component {
         console.log("Ethereum object does not exist");
       }
   }
-  priceToken = async () =>{
-    const { ethereum } = window;
-    if (ethereum) {
-      
-      const provider = new ethers.providers.Web3Provider(ethereum);
-      const signer = provider.getSigner();
-
-      let prices:any = []
-
-      const factoryContract = new ethers.Contract(factoryAddress, factoryABI, signer);
-      await factoryContract.getLatestPrice(tokenAddress).then((price:any ) =>{
-        console.log("Price: "+ethers.utils.formatEther(price).slice(0,6))
-        this.setState({prices:[ethers.utils.formatEther(price).slice(0,6)]})
-      })
-      
-    }else{
-      console.log("Ethereum object does not exist");
-    }
-  }
+ 
   getDeadline = async () => {
     const { ethereum } = window;
     if (ethereum) {
@@ -184,29 +94,7 @@ export default class Home extends React.Component {
           <h1 className={styles.title}>
             Welcome to <a href="https://nextjs.org">Dopex!</a>
           </h1>
-
-          <div className={styles.pricesContainer} >
-            {this.state.tokens.map((item,i) => {
-              return(
-                <div key={i} className="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-400 to-blue-600 group-hover:from-green-400 group-hover:to-blue-600 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800" onClick={(item) => {this.mintToken(item)}}>
-                  <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md ">
-                    {item} {this.state.prices[i]} / <FaEthereum className='inline'/>
-                  </span>
-                </div>)
-            })}
-            <div className={styles.changeNetwork}>
-              <button className="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-pink-500 to-orange-400 group-hover:from-pink-500 group-hover:to-orange-400 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-pink-200 dark:focus:ring-pink-800">
-                <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
-                    Connect to Avalanche
-                </span>
-              </button>          
-            </div>
-          </div>
-
-          <div className={styles.home_icon}>
-            <a href="/App" className='font-black dark:text-white'>Home</a>
-          </div>
-  
+          <TopBar></TopBar>
           <div className={styles.grid}>
             {this.state.tokens.map( (item,i) => {
               return(
