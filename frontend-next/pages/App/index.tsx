@@ -30,12 +30,16 @@ export default class Home extends React.Component {
     tokens: ["BTC", "LINK"],
     balance: [],
     prices: [],
+    strikesDeadline: ["0","0"],
     
+    btc_calls: 0,
+    link_calls: 0,
   }
 
   componentDidMount = () => {
     this.balanceToken()
     this.priceToken()
+    //this.getDeadline()
   }
 
   handleNetworkSwitch = async () => {
@@ -148,6 +152,24 @@ export default class Home extends React.Component {
       console.log("Ethereum object does not exist");
     }
   }
+  getDeadline = async () => {
+    const { ethereum } = window;
+    if (ethereum) {
+      
+      const provider = new ethers.providers.Web3Provider(ethereum);
+      const signer = provider.getSigner();
+
+      let deadlines:any = []
+
+      const tokenContract = new ethers.Contract(tokenAddress, tokenABI, signer);
+      await tokenContract.getStrikeDeadline().then((strike:any ) =>{
+        this.setState({deadlines:[ethers.utils.formatEther(strike).slice(0,6)]})
+      })
+      
+    }else{
+      console.log("Ethereum object does not exist");
+    }
+  }
   render(): React.ReactNode {
     return (
       <div className={styles.container}>
@@ -159,6 +181,7 @@ export default class Home extends React.Component {
         </Head>
         
         <main className={styles.main}>
+
           <h1 className={styles.title}>
             Welcome to <a href="https://nextjs.org">Dopex!</a>
           </h1>
@@ -188,37 +211,31 @@ export default class Home extends React.Component {
             <p>Balance: {this.state.balance}</p>
           </div>
   
-          <p className={styles.description}>
-            Get started by editing{' '}
-            <code className={styles.code}>pages/index.tsx</code>
-          </p>
-  
           <div className={styles.grid}>
+            {this.state.tokens.map( (item,i) => {
+              return(
+                <a className={styles.card}>
+                  <h2>{item}
+                    <span className=" bg-green-100 text-green-800 text-xs font-semibold ml-24 px-2.5 py-0.5 rounded dark:bg-green-200 dark:text-green-900">Calls</span>  
+                  </h2>
+                  <ul className='ml-5 flex flex-wrap font-medium text-center text-gray-500'>
+                    <li className='mr-2'>
+                      <a className="inline-block p-4 text-blue-600 bg-gray-100 rounded-md active dark:bg-gray-800 dark:text-blue-500">
+                        TVL:
+                      </a>
+                    </li>
+                    <li className="mr-2">
+                        <a className="inline-block p-4 text-blue-600 bg-gray-100 rounded-md active dark:bg-gray-800 dark:text-blue-500">Deposits:</a>
+                    </li>
+                  </ul>
+                  <p className={styles.epoch}>Epoch: {this.state.strikesDeadline[i]}</p>
+                  <button className='mt-5 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800'>
+                    <a href={"/"+item}>Manage</a>
+                  </button>
+                </a>
+              )
+            } )}
   
-            <a href="https://nextjs.org/learn" className={styles.card}>
-              <h2>Learn &rarr;</h2>
-              
-
-              <p>Learn about Next.js in an interactive course with quizzes!</p>
-            </a>
-  
-            <a
-              href="https://github.com/vercel/next.js/tree/canary/examples"
-              className={styles.card}
-            >
-              <h2>Examples &rarr;</h2>
-              <p>Discover and deploy boilerplate example Next.js projects.</p>
-            </a> 
-  
-            <a
-              href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-              className={styles.card}
-            >
-              <h2>Deploy &rarr;</h2>
-              <p>
-                Instantly deploy your Next.js site to a public URL with Vercel.
-              </p>
-            </a>
           </div>
         </main>
         
