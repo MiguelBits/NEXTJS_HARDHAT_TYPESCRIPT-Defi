@@ -5,46 +5,51 @@ const main = async(): Promise<any> => {
   
   const strikePrice = "300000000000000"
   const supplyOptions = "5000000000000000000"
+  const supplyOptions2 = "8000000000000000000"
   const fee = ethers.utils.parseEther("0.1").toString()
   const priceOracle = "0x378E78509a907B1Ec5c24d9f0243BD39f7A7b007"
-
+  
   const provider = waffle.provider;
   const signers = await ethers.getSigners()
-  const tokenizer = await new UnderlyingToken__factory(signers[0]).deploy("BTC","BTC")
+
+  // CREATE FACTORY AND UNDERLYING TOKENS
+  const optionsFactory = await new OptionsFactory__factory(signers[0]).deploy()
+  console.log("Factory at address: "+optionsFactory.address+"\n")
+
+  const tokenizer = await new UnderlyingToken__factory(signers[0]).deploy("BTC","BTC",optionsFactory.address)
 
   console.log("Coin deployed at: "+tokenizer.address)
   console.log("Account: "+signers[0].address)
 
+    //check balances in admin
   let balance = await tokenizer.balanceOf(signers[0].address)
 
   console.log("Token Balance is: "+balance.toString())
 
-  await tokenizer.saveThatMoney()
+  const tokenizer2 = await new UnderlyingToken__factory(signers[0]).deploy("BTC","BTC",optionsFactory.address)
 
-  const tokenizer2 = await new UnderlyingToken__factory(signers[0]).deploy("BTC","BTC")
-
-  console.log("Coin deployed at: "+tokenizer2.address)
+  console.log("Coin2 deployed at: "+tokenizer2.address)
   console.log("Account: "+signers[0].address)
 
   let balance2 = await tokenizer2.balanceOf(signers[0].address)
 
   console.log("Token Balance is: "+balance2.toString())
 
-  await tokenizer.saveThatMoney()
-  balance2 = await tokenizer2.balanceOf(signers[0].address)
-  console.log("New Token2 Balance2: "+balance2.toString())
 
+  //CREATE OPTION AND ANTI OPTION IN FACTORY
+
+  //token1 options
   var timestamp = Math.round(new Date().getTime() / 1000); //get timestamp for now
   timestamp += 3600*24; //now + 24h
-
-  const optionsFactory = await new OptionsFactory__factory(signers[0]).deploy()
-  console.log("Factory at address: "+optionsFactory.address+"\n")
+  const apy_ratio = 20;
   console.log("Approving Token... to fund factory...")
-  await tokenizer.approve(optionsFactory.address,"5000000000000000000")//5 ether
-
+  await tokenizer.approve(optionsFactory.address,supplyOptions)//5 ether
+  console.log("Approved")
   await optionsFactory.createOptionsToken(tokenizer.address, priceOracle)
-  await optionsFactory.activateOption(tokenizer.address,strikePrice,timestamp,supplyOptions)//strike price 3ether, fund with 5ether
+  await optionsFactory.activateOption(tokenizer.address,strikePrice,timestamp,supplyOptions, apy_ratio)//strike price 3ether, fund with 5ether, 20%ratio
+  await optionsFactory.activateAntiOption(tokenizer.address,strikePrice,timestamp,supplyOptions, apy_ratio-5)//strike price 3ether, fund with 5ether, 15%ratio
 
+  //check balances in every actor
   balance = await tokenizer.balanceOf(signers[0].address)
 
   let optionBalance = await optionsFactory.getAmountOptions(tokenizer.address,optionsFactory.address)
@@ -56,8 +61,33 @@ const main = async(): Promise<any> => {
   console.log("Factory => Anti Option Balance: "+antiOptionBalance.toString())
   console.log("Factory => Underlying Token Balance " + factoryTokenBalance.toString())
 
+  //token2 options
+  var timestamp2 = Math.round(new Date().getTime() / 1000); //get timestamp for now
+  timestamp2 += 3600*24; //now + 24h
+  const apy_ratio2 = 40;
+  console.log("Approving Token2... to fund factory...")
+  console.log("Approved")
+  await tokenizer2.approve(optionsFactory.address,supplyOptions2)//5 ether
+
+  await optionsFactory.createOptionsToken(tokenizer2.address, priceOracle)
+  await optionsFactory.activateOption(tokenizer2.address,strikePrice,timestamp2,supplyOptions2, apy_ratio2)//strike price 3ether, fund with 5ether, 40%ratio
+  await optionsFactory.activateAntiOption(tokenizer2.address,strikePrice,timestamp2,supplyOptions2, apy_ratio2-15)//strike price 3ether, fund with 5ether, 25%ratio
+
+  //check balances in every actor
+  balance2 = await tokenizer2.balanceOf(signers[0].address)
+
+  let optionBalance2 = await optionsFactory.getAmountOptions(tokenizer2.address,optionsFactory.address)
+  let antiOptionBalance2 = await optionsFactory.getAmountAntiOptions(tokenizer2.address,optionsFactory.address)
+  let factoryTokenBalance2 = await optionsFactory.getTokenBalance(tokenizer2.address);
+
+  console.log("After New Balance: "+balance2.toString())
+  console.log("Factory => Option Balance: "+optionBalance2.toString())
+  console.log("Factory => Anti Option Balance: "+antiOptionBalance2.toString())
+  console.log("Factory => Underlying Token Balance " + factoryTokenBalance2.toString())
+
   console.log("\nWill now buy options from factory\n")
-  
+  //Buy Option Simulation
+  /*
   console.log("Sending ether to pay premium on buy Option...")
   await optionsFactory.buyOptions(tokenizer.address,"1000000000000000000", { value: fee }) //buyOptions 1ether + pay premium
   optionBalance = await optionsFactory.getAmountOptions(tokenizer.address,optionsFactory.address)
@@ -78,6 +108,7 @@ const main = async(): Promise<any> => {
 
   let MyTokenPrice = await optionsFactory.getLatestPrice(tokenizer.address);
   console.log("The Token is valued at: "+ MyTokenPrice.toString())
+*/
 /*
   console.log("\nWill now Exercise Options\n")
   //exercise Option

@@ -4,6 +4,7 @@ import styles from '../styles/Home.module.css'
 import { ethers } from 'ethers';
 import {tokenAddress, token2Address, tokenABI, factoryAddress, factoryABI, erc20ABI} from "./contracts_abi"
 import TopBar from "../components/TopBar"
+import { FaEthereum } from "react-icons/fa";
 
 declare let window: any
 
@@ -27,34 +28,87 @@ export default class Home extends React.Component {
     tokens: ["BTC", "LINK"],
     balance: [],
     prices: [],
-    strikesDeadline: ["0","0"],
-    
-    btc_calls: 0,
-    link_calls: 0,
+    tvls: [],
+    apys_calls: [],
+    apys_puts: [],
+
   }
 
   componentDidMount = () => {
-    //this.getDeadline()
+    this.getTVL()
+    this.getAPYs_calls()
+    this.getAPYs_puts()
   }
- 
-  getDeadline = async () => {
+  getTVL = async () => {
     const { ethereum } = window;
     if (ethereum) {
       
       const provider = new ethers.providers.Web3Provider(ethereum);
       const signer = provider.getSigner();
 
-      let deadlines:any = []
+      let tvls:any = []
 
-      const tokenContract = new ethers.Contract(tokenAddress, tokenABI, signer);
-      await tokenContract.getStrikeDeadline().then((strike:any ) =>{
-        this.setState({deadlines:[ethers.utils.formatEther(strike).slice(0,6)]})
+      const factoryContract = new ethers.Contract(factoryAddress, factoryABI, signer);
+      await factoryContract.getTVL(tokenAddress).then((result:any ) =>{
+        tvls.push(ethers.utils.formatEther(result).slice(0,6))
       })
-      
+      await factoryContract.getTVL(token2Address).then((result:any ) =>{
+        tvls.push(ethers.utils.formatEther(result).slice(0,6))
+      })
+
+      this.setState({tvls:tvls});
+
     }else{
       console.log("Ethereum object does not exist");
     }
   }
+  getAPYs_calls = async () => {
+    const { ethereum } = window;
+    if (ethereum) {
+      
+      const provider = new ethers.providers.Web3Provider(ethereum);
+      const signer = provider.getSigner();
+
+      let apys:any = []
+
+      const factoryContract = new ethers.Contract(factoryAddress, factoryABI, signer);
+      await factoryContract.getOptionApy(tokenAddress).then((result:any ) =>{
+        apys.push(ethers.utils.formatEther(result).slice(0,3))
+      })
+      await factoryContract.getOptionApy(token2Address).then((result:any ) =>{
+        apys.push(ethers.utils.formatEther(result).slice(0,3))
+      })
+
+      this.setState({apys_calls:apys});
+
+    }else{
+      console.log("Ethereum object does not exist");
+    }
+  }
+  getAPYs_puts = async () => {
+    const { ethereum } = window;
+    if (ethereum) {
+      
+      const provider = new ethers.providers.Web3Provider(ethereum);
+      const signer = provider.getSigner();
+
+      let apys:any = []
+
+      const factoryContract = new ethers.Contract(factoryAddress, factoryABI, signer);
+      await factoryContract.getAntiOptionApy(tokenAddress).then((result:any ) =>{
+        apys.push(ethers.utils.formatEther(result).slice(0,6))
+      })
+      await factoryContract.getAntiOptionApy(token2Address).then((result:any ) =>{
+        apys.push(ethers.utils.formatEther(result).slice(0,6))
+      })
+
+      this.setState({apys_puts:apys});
+
+    }else{
+      console.log("Ethereum object does not exist");
+    }
+  }
+
   render(): React.ReactNode {
     return (
       <div className={styles.container}>
@@ -72,23 +126,24 @@ export default class Home extends React.Component {
           </h1>
           <TopBar></TopBar>
           <div className={styles.grid}>
+            {/* CALLS */}
             {this.state.tokens.map( (item,i) => {
               return(
-                <a className={styles.card}>
+                <a className={styles.card} key={i}>
                   <h2>{item}
                     <span className=" bg-green-100 text-green-800 text-xs font-semibold ml-24 px-2.5 py-0.5 rounded dark:bg-green-200 dark:text-green-900">CALLS</span>  
                   </h2>
                   <ul className='ml-5 flex flex-wrap font-medium text-center text-gray-500'>
                     <li className='mr-2'>
                       <a className="inline-block p-4 text-blue-600 bg-gray-100 rounded-md active dark:bg-gray-800 dark:text-blue-500">
-                        TVL:
+                        TVL: {this.state.tvls[i]} <FaEthereum className='inline'/>
                       </a>
                     </li>
                     <li className="mr-2">
-                        <a className="inline-block p-4 text-blue-600 bg-gray-100 rounded-md active dark:bg-gray-800 dark:text-blue-500">Deposits:</a>
+                        <a className="inline-block p-4 text-blue-600 bg-gray-100 rounded-md active dark:bg-gray-800 dark:text-blue-500">APY: {this.state.apys_calls[i]}</a>
                     </li>
                   </ul>
-                  <p className={styles.epoch}>Epoch: {this.state.strikesDeadline[i]}</p>
+                  {/*<p className={styles.epoch}>Epoch: {this.state.strikesDeadline[i]}</p>*/}
                   <button className='mt-5 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800'>
                     <a href={"/Calls/"+item}>Manage</a>
                   </button>
@@ -96,24 +151,25 @@ export default class Home extends React.Component {
               )
             } )}
           </div>
-          <div className={styles.grid}>
+          {/* PUTS */}
+          <div className={styles.grid} >
             {this.state.tokens.map( (item,i) => {
               return(
-                <a className={styles.card}>
+                <a className={styles.card} key={i}>
                   <h2>{item}
                     <span className=" bg-red-100 text-red-800 text-xs font-semibold ml-24 px-2.5 py-0.5 rounded dark:bg-red-200 dark:text-red-900">PUTS</span>  
                   </h2>
                   <ul className='ml-5 flex flex-wrap font-medium text-center text-gray-500'>
                     <li className='mr-2'>
                       <a className="inline-block p-4 text-blue-600 bg-gray-100 rounded-md active dark:bg-gray-800 dark:text-blue-500">
-                        TVL:
+                        TVL: {this.state.tvls[i]} <FaEthereum className='inline'/>
                       </a>
                     </li>
                     <li className="mr-2">
-                        <a className="inline-block p-4 text-blue-600 bg-gray-100 rounded-md active dark:bg-gray-800 dark:text-blue-500">Deposits:</a>
+                        <a className="inline-block p-4 text-blue-600 bg-gray-100 rounded-md active dark:bg-gray-800 dark:text-blue-500">APY: {this.state.apys_puts[i]}</a>
                     </li>
                   </ul>
-                  <p className={styles.epoch}>Epoch: {this.state.strikesDeadline[i]}</p>
+                  {/*<p className={styles.epoch}>Epoch: {this.state.strikesDeadline[i]}</p>*/}
                   <button className='mt-5 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800'>
                     <a href={"/Puts/"+item}>Manage</a>
                   </button>

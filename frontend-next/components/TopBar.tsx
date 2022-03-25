@@ -44,7 +44,7 @@ export default class TopBar extends React.Component {
             });
             await txn.wait();
             } catch (err) {
-            console.log(err)
+              console.log(err)
             }
         };
         checkWalletIsConnected = async () => {
@@ -60,7 +60,7 @@ export default class TopBar extends React.Component {
 
         if (accounts.length !== 0) {
             const account = accounts[0];
-            console.log("Found an authorized account: ", account);
+            //console.log("Found an authorized account: ", account);
             this.setState({currentAccount: account});
         } else {
             console.log("No authorized account found");
@@ -93,7 +93,7 @@ export default class TopBar extends React.Component {
 
         const tokenContract = new ethers.Contract(tokenAddress, tokenABI, signer);
         tokenContract.balanceOf(accounts[0]).then((balance:any) =>{
-            console.log(ethers.utils.formatEther(balance))
+            //console.log(ethers.utils.formatEther(balance))
             this.setState({balance:ethers.utils.formatEther(balance)})
         })
         }else{
@@ -111,7 +111,7 @@ export default class TopBar extends React.Component {
     
           const factoryContract = new ethers.Contract(factoryAddress, factoryABI, signer);
           await factoryContract.getLatestPrice(tokenAddress).then((price:any ) =>{
-            console.log("Price: "+ethers.utils.formatEther(price).slice(0,6))
+            //console.log("Price: "+ethers.utils.formatEther(price).slice(0,6))
             this.setState({prices:[ethers.utils.formatEther(price).slice(0,6)]})
           })
           

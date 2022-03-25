@@ -1,21 +1,98 @@
 import React from 'react';
-import { toast } from 'react-toastify';
 import TopBar from '../../components/TopBar';
 import styles from "../../styles/Options.module.css"
 import Head from 'next/head'
+import { ethers } from 'ethers';
+import {tokenAddress, token2Address, tokenABI, factoryAddress, factoryABI, erc20ABI} from "../contracts_abi"
 
 declare let window: any
 
 class BTC extends React.Component {
     state = {
       optionTab: "Buy",
-      strikePriceDropdown: ["0","1","2"],
+      strikePriceOption: [],
+      strikeDeadlineOption: [],
+      selectedPrice: "",
+      selectedDeadline: "",
+      amountOptions: "",
+      balanceOptions: ""
     }
     
     componentDidMount = () => {
-        toast.configure()
+        this.getStrikes()
+        this.getBalanceOptions()
         
     };
+    getStrikes = async () =>{
+        const { ethereum } = window;
+        if (ethereum) {
+          
+          const provider = new ethers.providers.Web3Provider(ethereum);
+          const signer = provider.getSigner();
+    
+          let strikePriceOptions:any = []
+          let strikeDeadlineOptions:any = []
+
+          const factoryContract = new ethers.Contract(factoryAddress, factoryABI, signer);
+          await factoryContract.getOptionStrikePrices(tokenAddress).then((result:any ) =>{
+            strikePriceOptions.push(ethers.utils.formatEther(result).slice(0,6))
+          })
+    
+          this.setState({strikePriceOption:strikePriceOptions});
+
+          await factoryContract.getOptionStrikeDeadline(tokenAddress).then((result:any ) =>{
+            strikePriceOptions.push(ethers.utils.formatEther(result).slice(0,6))
+          })
+    
+          this.setState({strikeDeadlineOption:strikeDeadlineOptions});
+
+    
+        }else{
+          console.log("Ethereum object does not exist");
+        }
+    }
+    getBalanceOptions = async () => {
+      const { ethereum } = window;
+        if (ethereum) {
+          
+          const provider = new ethers.providers.Web3Provider(ethereum);
+          const signer = provider.getSigner();
+          const accounts = await provider.listAccounts();
+
+          const factoryContract = new ethers.Contract(factoryAddress, factoryABI, signer);
+          await factoryContract.getAmountOptions(tokenAddress,accounts[0]).then((result:any ) =>{
+            this.setState({balanceOptions:ethers.utils.formatEther(result).slice(0,6)});
+          })
+        }else{
+          console.log("Ethereum object does not exist");
+        }
+    }
+    buyOption = async () => {
+      const { ethereum } = window;
+      if (ethereum) {
+        
+        const provider = new ethers.providers.Web3Provider(ethereum);
+        const signer = provider.getSigner();
+
+        const factoryContract = new ethers.Contract(factoryAddress, factoryABI, signer);
+        await factoryContract.buyOptions(tokenAddress,this.state.amountOptions)
+      }else{
+        console.log("Ethereum object does not exist");
+      }
+    }
+    sellOption = async () => {
+      const { ethereum } = window;
+      if (ethereum) {
+        
+        const provider = new ethers.providers.Web3Provider(ethereum);
+        const signer = provider.getSigner();
+
+        const factoryContract = new ethers.Contract(factoryAddress, factoryABI, signer);
+        await factoryContract.exerciseOption(tokenAddress,this.state.amountOptions)
+      }else{
+        console.log("Ethereum object does not exist");
+      }
+    }
     render() {
       return (
         <div className={styles.container}>
@@ -44,13 +121,13 @@ class BTC extends React.Component {
                         <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Buy BTC Options<span className=" bg-green-100 text-green-800 text-xs font-semibold ml-24 px-2.5 py-0.5 rounded dark:bg-green-200 dark:text-green-900">CALLS</span>  </h5>
                     </a>
                     <br></br>
-                    {/* Dropdown menu */}
+                    {/* Price Dropdown menu */}
                     <h2>Strike Prices:</h2>
                     <fieldset>
-                      {this.state.strikePriceDropdown.map(item => {
+                      {this.state.strikePriceOption.map(item => {
                         return(
                         <div className="flex items-center mb-4">
-                          <input id="country-option-2" type="radio" name="prices" value={item} className="w-4 h-4 border-gray-300 focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-600 dark:focus:bg-blue-600 dark:bg-gray-700 dark:border-gray-600" aria-labelledby="country-option-2" aria-describedby="country-option-2"/>
+                          <input onClick={() => this.setState({selectedPrice:item})} id="country-option-2" type="radio" name="prices" value={item} className="w-4 h-4 border-gray-300 focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-600 dark:focus:bg-blue-600 dark:bg-gray-700 dark:border-gray-600" aria-labelledby="country-option-2" aria-describedby="country-option-2"/>
                           <label htmlFor="country-option-2" className="block ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
                             {item}
                           </label>
@@ -58,13 +135,13 @@ class BTC extends React.Component {
                         )
                       })}
                     </fieldset>
-                    {/* Dropdown menu */}
+                    {/* Deadline Dropdown menu */}
                     <h2>Strike Deadlines:</h2>
                     <fieldset>
-                      {this.state.strikePriceDropdown.map(item => {
+                      {this.state.strikeDeadlineOption.map(item => {
                         return(
                         <div className="flex items-center mb-4">
-                          <input id="country-option-2" type="radio" name="deadline" value={item} className="w-4 h-4 border-gray-300 focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-600 dark:focus:bg-blue-600 dark:bg-gray-700 dark:border-gray-600" aria-labelledby="country-option-2" aria-describedby="country-option-2"/>
+                          <input onClick={() => this.setState({selectedDeadline:item})} id="country-option-2" type="radio" name="deadline" value={item} className="w-4 h-4 border-gray-300 focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-600 dark:focus:bg-blue-600 dark:bg-gray-700 dark:border-gray-600" aria-labelledby="country-option-2" aria-describedby="country-option-2"/>
                           <label htmlFor="country-option-2" className="block ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
                             {item}
                           </label>
@@ -72,8 +149,39 @@ class BTC extends React.Component {
                         )
                       })}
                     </fieldset>
-                    <a href="#" className="inline-flex items-center py-2 px-3 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                        Buy more
+                    <br></br>
+                    {/* Input Amount */}
+                    <div className="flex justify-center">
+                      <div className="mb-3 xl:w-96">
+                        <label htmlFor="exampleText0" className="form-label inline-block mb-2 text-gray-700">How much?</label>
+                        <input
+                          type="text"
+                          className="
+                            form-control
+                            block
+                            w-full
+                            px-3
+                            py-1.5
+                            text-base
+                            font-normal
+                            text-gray-700
+                            bg-white bg-clip-padding
+                            border border-solid border-gray-300
+                            rounded
+                            transition
+                            ease-in-out
+                            m-0
+                            focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none
+                          "
+                          id="exampleText0"
+                          placeholder="Amount of Options to Buy"
+                          onChange={(e)=>this.setState({amountOptions:e.target.value})}
+                        />
+                      </div>
+                    </div>
+                    <br></br>
+                    <a onClick={this.buyOption} className="inline-flex items-center py-2 px-3 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                        Buy Option
                         <svg className="ml-2 -mr-1 w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
                     </a>
                   </div>
@@ -92,9 +200,39 @@ class BTC extends React.Component {
                     <a href="#">
                         <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Sell BTC Options<span className=" bg-green-100 text-green-800 text-xs font-semibold ml-24 px-2.5 py-0.5 rounded dark:bg-green-200 dark:text-green-900">CALLS</span></h5>
                     </a>
-                    <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">Here are the biggest enterprise technology acquisitions of 2021 so far, in reverse chronological order.</p>
-                    <a href="#" className="inline-flex items-center py-2 px-3 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                        Sell more
+                    <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">Balance: {this.state.balanceOptions}</p>
+                    {/* Input Amount */}
+                    <div className="flex justify-center">
+                      <div className="mb-3 xl:w-96">
+                        <label htmlFor="exampleText0" className="form-label inline-block mb-2 text-gray-700">How much?</label>
+                        <input
+                          type="text"
+                          className="
+                            form-control
+                            block
+                            w-full
+                            px-3
+                            py-1.5
+                            text-base
+                            font-normal
+                            text-gray-700
+                            bg-white bg-clip-padding
+                            border border-solid border-gray-300
+                            rounded
+                            transition
+                            ease-in-out
+                            m-0
+                            focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none
+                          "
+                          id="exampleText0"
+                          placeholder="Amount of Options to Sell"
+                          onChange={(e)=>this.setState({amountOptions:e.target.value})}
+                        />
+                      </div>
+                    </div>
+                    <br></br>
+                    <a onClick={this.sellOption} className="inline-flex items-center py-2 px-3 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                        Sell Option
                         <svg className="ml-2 -mr-1 w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
                     </a>
                   </div>
