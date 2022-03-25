@@ -61,7 +61,7 @@ class BTC extends React.Component {
           const accounts = await provider.listAccounts();
 
           const factoryContract = new ethers.Contract(factoryAddress, factoryABI, signer);
-          await factoryContract.getAntiAmountOptions(tokenAddress,accounts[0]).then((result:any ) =>{
+          await factoryContract.getAmountAntiOptions(tokenAddress,accounts[0]).then((result:any ) =>{
             this.setState({balanceOptions:ethers.utils.formatEther(result).slice(0,6)});
           })
         }else{
