@@ -22,8 +22,7 @@ class BTC extends React.Component {
     
     componentDidMount = () => {
         this.getStrikes()
-        this.getBalanceOptions()
-        
+        this.getBalanceOptions()        
     };
     getStrikes = async () =>{
         const { ethereum } = window;

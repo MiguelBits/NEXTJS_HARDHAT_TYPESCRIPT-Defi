@@ -73,7 +73,7 @@ class BTC extends React.Component {
           this.setState({strikePriceOption:strikePriceOptions});
 
           await factoryContract.getAntiOptionStrikeDeadline(tokenAddress).then((result:any ) =>{
-            strikeDeadlineOptions.push(ethers.utils.formatEther(result).slice(0,6))
+            strikeDeadlineOptions.push(result.toString())
           })
     
           this.setState({strikeDeadlineOption:strikeDeadlineOptions});

@@ -92,7 +92,7 @@ const main = async(): Promise<any> => {
 
   //token2 options
   var timestamp2 = Math.round(new Date().getTime() / 1000); //get timestamp for now
-  timestamp2 += 3600*24; //now + 24h
+  timestamp2 += 3600*12; //now + 24h
   const apy_ratio2 = 40;
 
   txn = await optionsFactory.createOptionsToken(tokenizer2.address, priceOracle2)

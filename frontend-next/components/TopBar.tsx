@@ -220,10 +220,10 @@ export default class TopBar extends React.Component {
             </button>
           </div>
 
-          <div className={styles.centerContainer}>
+          <a href="/" className={styles.centerContainer}>
             Dopex
             <Image src="/../public/favicon.ico" width="40" height="20" alt="dope"></Image>
-          </div>
+          </a>
 
           <div className={styles.leftContainer}>
             <a href="/">
