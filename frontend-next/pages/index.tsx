@@ -73,10 +73,10 @@ export default class Home extends React.Component {
 
       const factoryContract = new ethers.Contract(factoryAddress, factoryABI, signer);
       await factoryContract.getOptionApy(tokenAddress).then((result:any ) =>{
-        apys.push(ethers.utils.formatEther(result).slice(0,3))
+        apys.push(result.toString())
       })
       await factoryContract.getOptionApy(token2Address).then((result:any ) =>{
-        apys.push(ethers.utils.formatEther(result).slice(0,3))
+        apys.push(result.toString())
       })
 
       this.setState({apys_calls:apys});
@@ -96,10 +96,10 @@ export default class Home extends React.Component {
 
       const factoryContract = new ethers.Contract(factoryAddress, factoryABI, signer);
       await factoryContract.getAntiOptionApy(tokenAddress).then((result:any ) =>{
-        apys.push(ethers.utils.formatEther(result).slice(0,6))
+        apys.push(result.toString())
       })
       await factoryContract.getAntiOptionApy(token2Address).then((result:any ) =>{
-        apys.push(ethers.utils.formatEther(result).slice(0,6))
+        apys.push(result.toString())
       })
 
       this.setState({apys_puts:apys});
@@ -137,7 +137,7 @@ export default class Home extends React.Component {
                       </a>
                     </li>
                     <li className="mr-2">
-                        <a className="inline-block p-4 text-blue-600 bg-gray-100 rounded-md active dark:bg-gray-800 dark:text-blue-500">APY: {this.state.apys_calls[i]}</a>
+                        <a className="inline-block p-4 text-blue-600 bg-gray-100 rounded-md active dark:bg-gray-800 dark:text-blue-500">APY:{this.state.apys_calls[i]}%</a>
                     </li>
                   </ul>
                   {/*<p className={styles.epoch}>Epoch: {this.state.strikesDeadline[i]}</p>*/}
@@ -164,7 +164,7 @@ export default class Home extends React.Component {
                       </a>
                     </li>
                     <li className="mr-2">
-                        <a className="inline-block p-4 text-blue-600 bg-gray-100 rounded-md active dark:bg-gray-800 dark:text-blue-500">APY: {this.state.apys_puts[i]}</a>
+                        <a className="inline-block p-4 text-blue-600 bg-gray-100 rounded-md active dark:bg-gray-800 dark:text-blue-500">APY:{this.state.apys_puts[i]}%</a>
                     </li>
                   </ul>
                   {/*<p className={styles.epoch}>Epoch: {this.state.strikesDeadline[i]}</p>*/}

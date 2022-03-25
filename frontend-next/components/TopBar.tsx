@@ -112,9 +112,13 @@ export default class TopBar extends React.Component {
     
           const factoryContract = new ethers.Contract(factoryAddress, factoryABI, signer);
           await factoryContract.getLatestPrice(tokenAddress).then((price:any ) =>{
-            //console.log("Price: "+ethers.utils.formatEther(price).slice(0,6))
-            this.setState({prices:[ethers.utils.formatEther(price).slice(0,6)]})
+            prices.push(ethers.utils.formatEther(price).slice(0,6))
           })
+          await factoryContract.getLatestPrice(token2Address).then((price:any ) =>{
+            prices.push(ethers.utils.formatEther(price).slice(0,6))
+          })
+
+          this.setState({prices:prices})
           
         }else{
           console.log("Ethereum object does not exist");

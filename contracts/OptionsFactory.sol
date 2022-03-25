@@ -67,7 +67,7 @@ contract OptionsFactory {
         
         //set option strikes active
         option.setOption(_strikePrice, _strikeDeadline, apy_ratio);
-        
+
         //mint Option Token
         option.mintOption(address(this), _amount);
     }
