@@ -8,7 +8,8 @@ const main = async(): Promise<any> => {
   const supplyOptions2 = "8000000000000000000"
   const fee = ethers.utils.parseEther("0.1").toString()
   const priceOracle = "0x378E78509a907B1Ec5c24d9f0243BD39f7A7b007"
-  
+  const priceOracle2 = "0xf4060f80f295b34e0C2471461ba43745Aeb186d6"
+
   const provider = waffle.provider;
   const signers = await ethers.getSigners()
 
@@ -69,7 +70,7 @@ const main = async(): Promise<any> => {
   console.log("Approved")
   await tokenizer2.approve(optionsFactory.address,supplyOptions2)//5 ether
 
-  await optionsFactory.createOptionsToken(tokenizer2.address, priceOracle)
+  await optionsFactory.createOptionsToken(tokenizer2.address, priceOracle2)
   await optionsFactory.activateOption(tokenizer2.address,strikePrice,timestamp2,supplyOptions2, apy_ratio2)//strike price 3ether, fund with 5ether, 40%ratio
   await optionsFactory.activateAntiOption(tokenizer2.address,strikePrice,timestamp2,supplyOptions2, apy_ratio2-15)//strike price 3ether, fund with 5ether, 25%ratio
 

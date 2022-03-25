@@ -1,9 +1,9 @@
 import React from 'react';
-import TopBar from '../../components/TopBar';
-import styles from "../../styles/Options.module.css"
+import TopBar from '../../../components/TopBar';
+import styles from "../../../styles/Options.module.css"
 import Head from 'next/head'
 import { ethers } from 'ethers';
-import {tokenAddress, factoryAddress, factoryABI} from "../contracts_abi"
+import {tokenAddress, factoryAddress, factoryABI, tokenABI, erc20ABI} from "../../contracts_abi"
 
 declare let window: any
 
@@ -17,7 +17,6 @@ class BTC extends React.Component {
       amountOptions: "",
       balanceOptions: "",
       fee: "100000000000000000",
-
     }
     
     componentDidMount = () => {
@@ -25,76 +24,6 @@ class BTC extends React.Component {
         this.getBalanceOptions()
         
     };
-    getStrikes = async () =>{
-        const { ethereum } = window;
-        if (ethereum) {
-          
-          const provider = new ethers.providers.Web3Provider(ethereum);
-          const signer = provider.getSigner();
-    
-          let strikePriceOptions:any = []
-          let strikeDeadlineOptions:any = []
-
-          const factoryContract = new ethers.Contract(factoryAddress, factoryABI, signer);
-          await factoryContract.getOptionStrikePrices(tokenAddress).then((result:any ) =>{
-            strikePriceOptions.push(ethers.utils.formatEther(result).slice(0,6))
-          })
-    
-          this.setState({strikePriceOption:strikePriceOptions});
-
-          await factoryContract.getOptionStrikeDeadline(tokenAddress).then((result:any ) =>{
-            strikePriceOptions.push(ethers.utils.formatEther(result).slice(0,6))
-          })
-    
-          this.setState({strikeDeadlineOption:strikeDeadlineOptions});
-
-    
-        }else{
-          console.log("Ethereum object does not exist");
-        }
-    }
-    getBalanceOptions = async () => {
-      const { ethereum } = window;
-        if (ethereum) {
-          
-          const provider = new ethers.providers.Web3Provider(ethereum);
-          const signer = provider.getSigner();
-          const accounts = await provider.listAccounts();
-
-          const factoryContract = new ethers.Contract(factoryAddress, factoryABI, signer);
-          await factoryContract.getAmountOptions(tokenAddress,accounts[0]).then((result:any ) =>{
-            this.setState({balanceOptions:ethers.utils.formatEther(result).slice(0,6)});
-          })
-        }else{
-          console.log("Ethereum object does not exist");
-        }
-    }
-    buyOption = async () => {
-      const { ethereum } = window;
-      if (ethereum) {
-        
-        const provider = new ethers.providers.Web3Provider(ethereum);
-        const signer = provider.getSigner();
-
-        const factoryContract = new ethers.Contract(factoryAddress, factoryABI, signer);
-        await factoryContract.buyOptions(tokenAddress,this.state.amountOptions,{ value: this.state.fee })
-      }else{
-        console.log("Ethereum object does not exist");
-      }
-    }
-    sellOption = async () => {
-      const { ethereum } = window;
-      if (ethereum) {
-        
-        const provider = new ethers.providers.Web3Provider(ethereum);
-        const signer = provider.getSigner();
-
-        const factoryContract = new ethers.Contract(factoryAddress, factoryABI, signer);
-        await factoryContract.exerciseOption(tokenAddress,this.state.amountOptions)
-      }else{
-        console.log("Ethereum object does not exist");
-      }
-    }
     approveToken = async() => {
       const { ethereum } = window;
         if (ethereum) {
@@ -126,6 +55,76 @@ class BTC extends React.Component {
           console.log("Ethereum object does not exist");
         }
     }
+    getStrikes = async () =>{
+        const { ethereum } = window;
+        if (ethereum) {
+          
+          const provider = new ethers.providers.Web3Provider(ethereum);
+          const signer = provider.getSigner();
+    
+          let strikePriceOptions:any = []
+          let strikeDeadlineOptions:any = []
+
+          const factoryContract = new ethers.Contract(factoryAddress, factoryABI, signer);
+          await factoryContract.getAntiOptionStrikePrices(tokenAddress).then((result:any ) =>{
+            strikePriceOptions.push(ethers.utils.formatEther(result).slice(0,6))
+          })
+    
+          this.setState({strikePriceOption:strikePriceOptions});
+
+          await factoryContract.getAntiOptionStrikeDeadline(tokenAddress).then((result:any ) =>{
+            strikePriceOptions.push(ethers.utils.formatEther(result).slice(0,6))
+          })
+    
+          this.setState({strikeDeadlineOption:strikeDeadlineOptions});
+
+    
+        }else{
+          console.log("Ethereum object does not exist");
+        }
+    }
+    getBalanceOptions = async () => {
+      const { ethereum } = window;
+        if (ethereum) {
+          
+          const provider = new ethers.providers.Web3Provider(ethereum);
+          const signer = provider.getSigner();
+          const accounts = await provider.listAccounts();
+
+          const factoryContract = new ethers.Contract(factoryAddress, factoryABI, signer);
+          await factoryContract.getAmountAntiOptions(tokenAddress,accounts[0]).then((result:any ) =>{
+            this.setState({balanceOptions:ethers.utils.formatEther(result).slice(0,6)});
+          })
+        }else{
+          console.log("Ethereum object does not exist");
+        }
+    }
+    buyOption = async () => {
+      const { ethereum } = window;
+      if (ethereum) {
+        
+        const provider = new ethers.providers.Web3Provider(ethereum);
+        const signer = provider.getSigner();
+
+        const factoryContract = new ethers.Contract(factoryAddress, factoryABI, signer);
+        await factoryContract.buyAntiOptions(tokenAddress,this.state.amountOptions,{ value: this.state.fee })
+      }else{
+        console.log("Ethereum object does not exist");
+      }
+    }
+    sellOption = async () => {
+      const { ethereum } = window;
+      if (ethereum) {
+        
+        const provider = new ethers.providers.Web3Provider(ethereum);
+        const signer = provider.getSigner();
+
+        const factoryContract = new ethers.Contract(factoryAddress, factoryABI, signer);
+        await factoryContract.exerciseAntiOption(tokenAddress,this.state.amountOptions)
+      }else{
+        console.log("Ethereum object does not exist");
+      }
+    }
     render() {
       return (
         <div className={styles.container}>
@@ -136,7 +135,6 @@ class BTC extends React.Component {
           </Head>
           <TopBar></TopBar>
             <main className={styles.main}>
-              
               {
               this.state.optionTab === "Buy" ? 
                 <div>

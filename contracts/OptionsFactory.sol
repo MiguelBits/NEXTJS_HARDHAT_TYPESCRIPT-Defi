@@ -311,6 +311,18 @@ contract OptionsFactory {
         OptionToken antiOption = allAntiOptionTokens[_token];
         return antiOption.getStrikeDeadline();
     }
+    function getOptionAddress(address _token) public view returns(address){
+        require(allTokens[_token].length > 0,"There are no options for this token");
+        //get Tokens
+        OptionToken option = allOptionTokens[_token];
+        return address(option);
+    }
+    function getAntiOptionAddress(address _token) public view returns(address){
+        require(allTokens[_token].length > 0,"There are no options for this token");
+        //get Tokens
+        OptionToken antiOption = allAntiOptionTokens[_token];
+        return address(antiOption);
+    }
     //withdraw all fees of ether
     function withdrawFees() public onlyAdmin(){
         payable(msg.sender).transfer(address(this).balance);

@@ -3,7 +3,7 @@ import TopBar from '../../components/TopBar';
 import styles from "../../styles/Options.module.css"
 import Head from 'next/head'
 import { ethers } from 'ethers';
-import {tokenAddress, factoryAddress, factoryABI} from "../contracts_abi"
+import {tokenAddress, factoryAddress, factoryABI, tokenABI, erc20ABI} from "../contracts_abi"
 
 declare let window: any
 
@@ -24,6 +24,37 @@ class BTC extends React.Component {
         this.getBalanceOptions()
         
     };
+    approveToken = async() => {
+      const { ethereum } = window;
+        if (ethereum) {
+          
+          const provider = new ethers.providers.Web3Provider(ethereum);
+          const signer = provider.getSigner();
+
+          const tokenContract = new ethers.Contract(tokenAddress, erc20ABI, signer);
+          await tokenContract.approve(factoryAddress,this.state.amountOptions)
+        }else{
+          console.log("Ethereum object does not exist");
+        }
+    }
+    approveSellToken = async() => {
+      const { ethereum } = window;
+        if (ethereum) {
+          
+          const provider = new ethers.providers.Web3Provider(ethereum);
+          const signer = provider.getSigner();
+          let address = "";
+          const factoryContract = new ethers.Contract(factoryAddress,factoryABI,signer);
+          await factoryContract.getOptionAddress(tokenAddress).then( (result:any) => {
+            address = result
+          })
+          const tokenContract = new ethers.Contract(address, erc20ABI, signer);
+          await tokenContract.approve(factoryAddress,this.state.amountOptions)
+
+        }else{
+          console.log("Ethereum object does not exist");
+        }
+    }
     getStrikes = async () =>{
         const { ethereum } = window;
         if (ethereum) {
@@ -104,7 +135,6 @@ class BTC extends React.Component {
           </Head>
           <TopBar></TopBar>
             <main className={styles.main}>
-              
               {
               this.state.optionTab === "Buy" ? 
                 <div>
@@ -185,6 +215,8 @@ class BTC extends React.Component {
                         Buy Option
                         <svg className="ml-2 -mr-1 w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
                     </a>
+                    <button type="button" onClick={() => this.approveToken()} className="ml-24 inline-block px-6 py-2 border-2 border-blue-600 text-blue-600 font-medium text-xs leading-tight uppercase rounded-full hover:bg-black hover:bg-opacity-5 focus:outline-none focus:ring-0 transition duration-150 ease-in-out">Approve</button>
+
                   </div>
                 </div>
                 :
@@ -236,6 +268,8 @@ class BTC extends React.Component {
                         Sell Option
                         <svg className="ml-2 -mr-1 w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
                     </a>
+                    <button type="button" onClick={() => this.approveSellToken()} className="ml-24 inline-block px-6 py-2 border-2 border-blue-600 text-blue-600 font-medium text-xs leading-tight uppercase rounded-full hover:bg-black hover:bg-opacity-5 focus:outline-none focus:ring-0 transition duration-150 ease-in-out">Approve</button>
+
                   </div>
                 </div>
               }

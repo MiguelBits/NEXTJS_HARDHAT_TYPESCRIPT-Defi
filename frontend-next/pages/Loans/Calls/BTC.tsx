@@ -1,9 +1,9 @@
 import React from 'react';
-import TopBar from '../../components/TopBar';
-import styles from "../../styles/Options.module.css"
+import TopBar from '../../../components/TopBar';
+import styles from "../../../styles/Options.module.css"
 import Head from 'next/head'
 import { ethers } from 'ethers';
-import {tokenAddress, factoryAddress, factoryABI} from "../contracts_abi"
+import {tokenAddress, factoryAddress, factoryABI, tokenABI, erc20ABI} from "../../contracts_abi"
 
 declare let window: any
 
