@@ -121,9 +121,6 @@ export default class Home extends React.Component {
         
         <main className={styles.main}>
 
-          <h1 className={styles.title}>
-            Welcome to <a href="https://nextjs.org">Dopex!</a>
-          </h1>
           <TopBar></TopBar>
           <div className={styles.grid}>
             {/* CALLS */}
