@@ -7,7 +7,6 @@ contract OptionToken is ERC20 {
     
     bool internal isActive;
     bool internal isSold;
-    int256 internal depositedPrice;
     uint256 internal apy_ratio;
     uint internal strikePrice;
     uint internal strikeDeadline;
@@ -38,14 +37,6 @@ contract OptionToken is ERC20 {
         require(msg.sender == poolAdmin,"You are not pool Admin!");
         _;
     }
-        modifier isOptionSold(){
-        require(isSold, "Requires Option to be sold!");
-        _;
-    }
-    modifier isOptionNotSold(){
-        require(!isSold, "Requires Option to nnot have been sold!");
-        _;
-    }
 
     //Setters
     function _setOption(uint _strikePrice, uint _strikeDeadline, uint256 _apy_ratio) ensure(_strikeDeadline) isOptionNotActive() internal{
@@ -57,12 +48,6 @@ contract OptionToken is ERC20 {
     function setOption(uint _strikePrice, uint _strikeDeadline, uint256 _apy_ratio) isOptionNotActive() isPoolAdmin() external{
         _setOption(_strikePrice, _strikeDeadline, _apy_ratio);
     }
-    function setDepositedPrice(int256 _price) isPoolAdmin() isOptionNotSold() external{
-        depositedPrice = _price;
-    }
-    function setSale(bool status) isPoolAdmin() external{
-        isSold = status;
-    }   
     //Getters
     function getStrikePrice() public view isOptionActive() returns(uint _strikePrice){
         return strikePrice;
@@ -72,9 +57,6 @@ contract OptionToken is ERC20 {
     }
     function getUnderlyingToken() public view returns(address){
         return _underlyingTokenAddress;
-    }
-    function getDepositedPrice() public view isOptionSold() returns(int256 price){
-        return depositedPrice;
     }
     function getApyRatio() public view returns(uint256 _apy_ratio){
         return apy_ratio;

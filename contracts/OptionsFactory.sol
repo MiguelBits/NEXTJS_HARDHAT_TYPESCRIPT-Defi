@@ -126,11 +126,7 @@ contract OptionsFactory {
         //check factory underlyingToken balance
         require(my_underlyingToken.balanceOf(address(this)) >= _amount, "Not enough balance in Factory");
         require(option.balanceOf(address(this)) >= _amount, "Not enough balance in Factory");
-                
-        //price feed
-        int256 priceNow = getLatestPrice(_underlyingToken);
-        option.setDepositedPrice(priceNow);
-        
+
         //set bought option
         option.setSale(true);
 
@@ -160,10 +156,6 @@ contract OptionsFactory {
         antiOption.approve(msg.sender,_amount);
         require(antiOption.allowance(address(this), msg.sender) == _amount, "Factory did not approve tokens");
 
-        //price feed
-        int256 priceNow = getLatestPrice(_underlyingToken);
-        antiOption.setDepositedPrice(priceNow);
-
         //set bought option
         antiOption.setSale(true);
 
@@ -191,12 +183,9 @@ contract OptionsFactory {
         require(msg.value >= strikePrice, "Did not send Ether equal to strike price!");
 
         //price calculus
-        uint priceDifference;
         uint priceNow = uint(getLatestPrice(_underlyingToken));
-        uint priceDeposited = uint(option.getDepositedPrice());
-        priceDifference = priceNow.sub(priceDeposited);
-        
-        require(priceNow >= strikePrice  && priceDifference >= 0, "Restricted from exercising losing position in Option!");
+
+        require(priceNow >= strikePrice, "Restricted from exercising losing position in Option!");
 
         //approve token
         my_underlyingToken.approve(msg.sender, _amount);
@@ -227,12 +216,9 @@ contract OptionsFactory {
         require(strikeDeadline <= block.timestamp, "Time Options: NOT EXPIRED");
         
         //price calculus
-        uint priceDifference;
         uint priceNow = uint(getLatestPrice(_underlyingToken));
-        uint priceDeposited = uint(antiOption.getDepositedPrice());
-        priceDifference = priceDeposited.sub(priceNow);
         
-        require(priceNow <= strikePrice && priceDifference >= 0, "Restricted from exercising losing position in Option!");
+        require(priceNow <= strikePrice, "Restricted from exercising losing position in Option!");
 
         //approve token
         my_underlyingToken.approve(msg.sender, _amount);

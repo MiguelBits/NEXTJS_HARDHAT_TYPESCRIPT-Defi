@@ -2,7 +2,7 @@ import React from 'react';
 import TopBar from '../../components/TopBar';
 import styles from "../../styles/Options.module.css"
 import Head from 'next/head'
-import { ethers } from 'ethers';
+import { BigNumber, ethers } from 'ethers';
 import {token2Address, factoryAddress, factoryABI, erc20ABI} from "../contracts_abi"
 
 declare let window: any
@@ -77,7 +77,8 @@ class LINK extends React.Component {
         const signer = provider.getSigner();
 
         const factoryContract = new ethers.Contract(factoryAddress, factoryABI, signer);
-        await factoryContract.buyOptions(token2Address,this.state.amountOptions,{ value: this.state.fee })
+        const payFee = BigNumber.from(this.state.fee).mul(this.state.amountOptions)
+        await factoryContract.buyOptions(token2Address,ethers.utils.parseEther(this.state.amountOptions),{ value: payFee })
       }else{
         console.log("Ethereum object does not exist");
       }

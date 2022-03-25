@@ -2,7 +2,7 @@ import React from 'react';
 import TopBar from '../../components/TopBar';
 import styles from "../../styles/Options.module.css"
 import Head from 'next/head'
-import { ethers } from 'ethers';
+import { ethers, BigNumber } from 'ethers';
 import {tokenAddress, factoryAddress, erc20ABI, factoryABI} from "../contracts_abi"
 
 declare let window: any
@@ -77,7 +77,8 @@ class BTC extends React.Component {
         const signer = provider.getSigner();
 
         const factoryContract = new ethers.Contract(factoryAddress, factoryABI, signer);
-        await factoryContract.buyOptions(tokenAddress,this.state.amountOptions,{ value: this.state.fee })
+        const payFee = BigNumber.from(this.state.fee).mul(this.state.amountOptions)
+        await factoryContract.buyOptions(tokenAddress,ethers.utils.parseEther(this.state.amountOptions),{ value: payFee })
       }else{
         console.log("Ethereum object does not exist");
       }
@@ -90,7 +91,7 @@ class BTC extends React.Component {
         const signer = provider.getSigner();
 
         const factoryContract = new ethers.Contract(factoryAddress, factoryABI, signer);
-        await factoryContract.exerciseOption(tokenAddress,this.state.amountOptions)
+        await factoryContract.exerciseOption(tokenAddress,ethers.utils.parseEther(this.state.amountOptions))
       }else{
         console.log("Ethereum object does not exist");
       }
@@ -103,7 +104,7 @@ class BTC extends React.Component {
           const signer = provider.getSigner();
 
           const tokenContract = new ethers.Contract(tokenAddress, erc20ABI, signer);
-          await tokenContract.approve(factoryAddress,this.state.amountOptions)
+          await tokenContract.approve(factoryAddress,ethers.utils.parseEther(this.state.amountOptions))
         }else{
           console.log("Ethereum object does not exist");
         }
