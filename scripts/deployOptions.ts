@@ -26,7 +26,7 @@ const main = async(): Promise<any> => {
   let txn;
   // CREATE FACTORY AND UNDERLYING TOKENS
   const optionsFactory = await new OptionsFactory__factory(signers[0]).deploy()
-  console.log("Factory at address: "+optionsFactory.address+"\n")
+  console.log("\nFactory at address: "+optionsFactory.address+"\n")
 
   const tokenizer = await new UnderlyingToken__factory(signers[0]).deploy("BTC","BTC",optionsFactory.address)
 
@@ -74,7 +74,7 @@ const main = async(): Promise<any> => {
   console.log("Approved")
 
   console.log("Activate Anti Option")
-  txn = await optionsFactory.activateAntiOption(tokenizer.address,strikePrice,timestamp,supplyOptions, apy_ratio-5)//strike price 3ether, fund with 5ether, 15%ratio
+  txn = await optionsFactory.activateAntiOption(tokenizer.address,strikeAntiPrice,timestamp,supplyAntiOptions, apy_ratio-5)//strike price 3ether, fund with 5ether, 15%ratio
   txn.wait()
   console.log("Active!")
 
@@ -102,15 +102,19 @@ const main = async(): Promise<any> => {
   await tokenizer2.approve(optionsFactory.address,supplyOptions2)//5 ether
   console.log("Approved")
 
-  txn = await optionsFactory.activateOption(tokenizer2.address,strikePrice,timestamp2,supplyOptions2, apy_ratio2)//strike price 3ether, fund with 5ether, 40%ratio
+  console.log("Activate 2 Option")
+  txn = await optionsFactory.activateOption(tokenizer2.address,strikePrice2,timestamp2,supplyOptions2, apy_ratio2)//strike price 3ether, fund with 5ether, 40%ratio
   txn.wait()
+  console.log("Active 2 Option")
 
   console.log("Approving Token2... to activate anti option and fund factory...")
   await tokenizer2.approve(optionsFactory.address,supplyOptions2)//5 ether
   console.log("Approved")
 
-  txn = await optionsFactory.activateAntiOption(tokenizer2.address,strikePrice,timestamp2,supplyOptions2, apy_ratio2-15)//strike price 3ether, fund with 5ether, 25%ratio
+  console.log("Activate 2 Anti Option")
+  txn = await optionsFactory.activateAntiOption(tokenizer2.address,strikeAntiPrice2,timestamp2,supplyAntiOptions2, apy_ratio2-15)//strike price 3ether, fund with 5ether, 25%ratio
   txn.wait()
+  console.log("Active 2 Anti Option")
 
   //check balances in every actor
   balance2 = await tokenizer2.balanceOf(signers[0].address)

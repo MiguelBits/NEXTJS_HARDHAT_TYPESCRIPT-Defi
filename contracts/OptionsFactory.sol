@@ -127,9 +127,6 @@ contract OptionsFactory {
         require(my_underlyingToken.balanceOf(address(this)) >= _amount, "Not enough balance in Factory");
         require(option.balanceOf(address(this)) >= _amount, "Not enough balance in Factory");
 
-        //set bought option
-        option.setSale(true);
-
         //send desired amount of options
         option.transfer(msg.sender, _amount);
 
@@ -155,9 +152,6 @@ contract OptionsFactory {
         //approve to send to sender
         antiOption.approve(msg.sender,_amount);
         require(antiOption.allowance(address(this), msg.sender) == _amount, "Factory did not approve tokens");
-
-        //set bought option
-        antiOption.setSale(true);
 
         //send desired amount of options
         antiOption.transfer(msg.sender, _amount);
