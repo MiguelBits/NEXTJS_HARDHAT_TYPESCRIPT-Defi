@@ -126,6 +126,18 @@ class LINK extends React.Component {
           console.log("Ethereum object does not exist");
         }
     }
+    parseDate = (result:any) => {
+      var a = new Date(result * 1000);
+      var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      var year = a.getFullYear();
+      var month = months[a.getMonth()];
+      var date = a.getDate();
+      var hour = a.getHours();
+      var min = a.getMinutes();
+      var sec = a.getSeconds();
+      var time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec ;
+      return time;
+    }
     render() {
       return (
         <div className={styles.container}>
@@ -176,7 +188,7 @@ class LINK extends React.Component {
                         <div className="flex items-center mb-4">
                           <input onClick={() => this.setState({selectedDeadline:item})} id="country-option-2" type="radio" name="deadline" value={item} className="w-4 h-4 border-gray-300 focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-600 dark:focus:bg-blue-600 dark:bg-gray-700 dark:border-gray-600" aria-labelledby="country-option-2" aria-describedby="country-option-2"/>
                           <label htmlFor="country-option-2" className="block ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
-                            {item}
+                            {this.parseDate(item)}
                           </label>
                         </div>
                         )

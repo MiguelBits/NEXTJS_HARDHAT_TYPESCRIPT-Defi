@@ -5,11 +5,16 @@ const main = async(): Promise<any> => {
   
   const strikePrice = "16000000000000000000"
   const strikeAntiPrice = "12000000000000000000"
+
   const strikePrice2 = "6119000000000000"
   const strikeAntiPrice2 = "4119000000000000"
+
   const supplyOptions = "5000000000000000000"
   const supplyAntiOptions = "3000000000000000000"
+
   const supplyOptions2 = "8000000000000000000"
+  const supplyAntiOptions2 = "10000000000000000000"
+
   const fee = ethers.utils.parseEther("0.1").toString()
   const priceOracle = "0x378E78509a907B1Ec5c24d9f0243BD39f7A7b007"
   const priceOracle2 = "0xf4060f80f295b34e0C2471461ba43745Aeb186d6"
@@ -50,17 +55,29 @@ const main = async(): Promise<any> => {
   timestamp += 3600*24; //now + 24h
   const apy_ratio = 20;
 
-  console.log("Approving Token... to fund factory...")
+  txn = await optionsFactory.createOptionsToken(tokenizer.address, priceOracle)
+  txn.wait()
+
+  console.log("Approving Token... to activate option and fund factory...")
   txn = await tokenizer.approve(optionsFactory.address,supplyOptions)//5 ether
   txn.wait()
   console.log("Approved")
 
-  txn = await optionsFactory.createOptionsToken(tokenizer.address, priceOracle)
-  txn.wait()
+  console.log("Activate Option")
   txn = await optionsFactory.activateOption(tokenizer.address,strikePrice,timestamp,supplyOptions, apy_ratio)//strike price 3ether, fund with 5ether, 20%ratio
   txn.wait()
+  console.log("Active!")
+  
+  console.log("Approving Token... to activate anti option and fund factory...")
+  txn = await tokenizer.approve(optionsFactory.address,supplyOptions)//5 ether
+  txn.wait()
+  console.log("Approved")
+
+  console.log("Activate Anti Option")
   txn = await optionsFactory.activateAntiOption(tokenizer.address,strikePrice,timestamp,supplyOptions, apy_ratio-5)//strike price 3ether, fund with 5ether, 15%ratio
   txn.wait()
+  console.log("Active!")
+
   //check balances in every actor
   balance = await tokenizer.balanceOf(signers[0].address)
 
@@ -77,14 +94,21 @@ const main = async(): Promise<any> => {
   var timestamp2 = Math.round(new Date().getTime() / 1000); //get timestamp for now
   timestamp2 += 3600*24; //now + 24h
   const apy_ratio2 = 40;
-  console.log("Approving Token2... to fund factory...")
-  console.log("Approved")
-  await tokenizer2.approve(optionsFactory.address,supplyOptions2)//5 ether
 
   txn = await optionsFactory.createOptionsToken(tokenizer2.address, priceOracle2)
   txn.wait()
+
+  console.log("Approving Token2... to activate option and fund factory...")
+  await tokenizer2.approve(optionsFactory.address,supplyOptions2)//5 ether
+  console.log("Approved")
+
   txn = await optionsFactory.activateOption(tokenizer2.address,strikePrice,timestamp2,supplyOptions2, apy_ratio2)//strike price 3ether, fund with 5ether, 40%ratio
   txn.wait()
+
+  console.log("Approving Token2... to activate anti option and fund factory...")
+  await tokenizer2.approve(optionsFactory.address,supplyOptions2)//5 ether
+  console.log("Approved")
+
   txn = await optionsFactory.activateAntiOption(tokenizer2.address,strikePrice,timestamp2,supplyOptions2, apy_ratio2-15)//strike price 3ether, fund with 5ether, 25%ratio
   txn.wait()
 
