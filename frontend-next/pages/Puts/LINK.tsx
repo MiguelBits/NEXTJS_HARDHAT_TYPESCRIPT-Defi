@@ -249,6 +249,8 @@ class LINK extends React.Component {
                         <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Sell LINK Options<span className=" bg-green-100 text-green-800 text-xs font-semibold ml-24 px-2.5 py-0.5 rounded dark:bg-green-200 dark:text-green-900">CALLS</span></h5>
                     </a>
                     <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">Balance: {this.state.balanceOptions}</p>
+                    <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">Exercise starts 1h before: {this.parseDate(this.state.strikeDeadlineOption[0])}</p>
+
                     {/* Input Amount */}
                     <div className="flex justify-center">
                       <div className="mb-3 xl:w-96">

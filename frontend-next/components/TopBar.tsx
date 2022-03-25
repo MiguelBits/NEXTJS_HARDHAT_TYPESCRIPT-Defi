@@ -25,7 +25,8 @@ export default class TopBar extends React.Component {
     },
 
     tokens: ["BTC", "LINK"],
-    balance: [],
+    optionsBalance: [],
+    antiOptionsBalance: [],
     prices: [],
     strikesDeadline: ["0","0"],
     }
@@ -34,7 +35,8 @@ export default class TopBar extends React.Component {
         this.checkWalletIsConnected()
         this.balanceToken()
         this.priceToken()
-        
+        this.getOptionsAmount()
+        this.getAntiOptionsAmount()
     };
     handleNetworkSwitch = async () => {
         try {
@@ -125,29 +127,73 @@ export default class TopBar extends React.Component {
         }
       }
     
-  mintToken = async (item:any) =>{
-    const { ethereum } = window;
-      if (ethereum) {
-        
-        const provider = new ethers.providers.Web3Provider(ethereum);
-        const signer = provider.getSigner();
+    mintToken = async (item:any) =>{
+      const { ethereum } = window;
+        if (ethereum) {
+          
+          const provider = new ethers.providers.Web3Provider(ethereum);
+          const signer = provider.getSigner();
 
-        let tokenContract;
+          let tokenContract;
 
-        if(item === "BTC"){
-          tokenContract = new ethers.Contract(tokenAddress, tokenABI, signer);
+          if(item === "BTC"){
+            tokenContract = new ethers.Contract(tokenAddress, tokenABI, signer);
+          }
+          else{
+            tokenContract = new ethers.Contract(token2Address, tokenABI, signer);
+          }
+
+          tokenContract.saveThatMoney().then((balance: Promise<String>) =>{
+            return(balance.toString())
+          })
+        }else{
+          console.log("Ethereum object does not exist");
         }
-        else{
-          tokenContract = new ethers.Contract(token2Address, tokenABI, signer);
-        }
+    }
+    getOptionsAmount = async () =>{
+      const { ethereum } = window;
+        if (ethereum) {
+          
+          const provider = new ethers.providers.Web3Provider(ethereum);
+          const signer = provider.getSigner();
+          const accounts = await provider.listAccounts();
 
-        tokenContract.saveThatMoney().then((balance: Promise<String>) =>{
-          return(balance.toString())
-        })
-      }else{
-        console.log("Ethereum object does not exist");
-      }
-  }
+          let balances:any = []
+          
+          const factoryContract = new ethers.Contract(factoryAddress, factoryABI, signer);
+          factoryContract.getAmountOptions(tokenAddress, accounts[0]).then((balance: Promise<String>) =>{
+            balances.push(ethers.utils.formatEther(balance.toString()))
+          })
+          factoryContract.getAmountOptions(token2Address, accounts[0]).then((balance: Promise<String>) =>{
+            balances.push(ethers.utils.formatEther(balance.toString()))
+          })
+          this.setState({optionsBalance:balances})
+        }else{
+          console.log("Ethereum object does not exist");
+        }
+    }
+    getAntiOptionsAmount = async () =>{
+      const { ethereum } = window;
+        if (ethereum) {
+          
+          const provider = new ethers.providers.Web3Provider(ethereum);
+          const signer = provider.getSigner();
+          const accounts = await provider.listAccounts();
+
+          let balances:any = []
+          
+          const factoryContract = new ethers.Contract(factoryAddress, factoryABI, signer);
+          factoryContract.getAmountAntiOptions(tokenAddress, accounts[0]).then((balance: Promise<String>) =>{
+            balances.push(ethers.utils.formatEther(balance.toString()))
+          })
+          factoryContract.getAmountAntiOptions(token2Address, accounts[0]).then((balance: Promise<String>) =>{
+            balances.push(ethers.utils.formatEther(balance.toString()))
+          })
+          this.setState({optionsBalance:balances})
+        }else{
+          console.log("Ethereum object does not exist");
+        }
+    }
     render() {
       return (
         <div>
@@ -193,6 +239,23 @@ export default class TopBar extends React.Component {
                 Mint LINK
               </span>
             </button>
+            {/*
+            Balance:
+              Calls:
+              <div className="white">
+                {this.state.optionsBalance[0]}
+              </div>
+              <div className="white">
+                {this.state.optionsBalance[1]}
+              </div>
+              Puts:
+              <div className="white">
+                {this.state.antiOptionsBalance[0]}
+              </div>
+              <div className="white">
+                {this.state.antiOptionsBalance[1]}
+              </div>
+              */}
           </div>
 
         </div>
