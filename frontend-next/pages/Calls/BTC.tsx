@@ -3,7 +3,7 @@ import TopBar from '../../components/TopBar';
 import styles from "../../styles/Options.module.css"
 import Head from 'next/head'
 import { ethers } from 'ethers';
-import {tokenAddress, token2Address, tokenABI, factoryAddress, factoryABI, erc20ABI} from "../contracts_abi"
+import {tokenAddress, factoryAddress, factoryABI} from "../contracts_abi"
 
 declare let window: any
 
@@ -15,7 +15,9 @@ class BTC extends React.Component {
       selectedPrice: "",
       selectedDeadline: "",
       amountOptions: "",
-      balanceOptions: ""
+      balanceOptions: "",
+      fee: "100000000000000000",
+
     }
     
     componentDidMount = () => {
@@ -75,7 +77,7 @@ class BTC extends React.Component {
         const signer = provider.getSigner();
 
         const factoryContract = new ethers.Contract(factoryAddress, factoryABI, signer);
-        await factoryContract.buyOptions(tokenAddress,this.state.amountOptions)
+        await factoryContract.buyOptions(tokenAddress,this.state.amountOptions,{ value: this.state.fee })
       }else{
         console.log("Ethereum object does not exist");
       }

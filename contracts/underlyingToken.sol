@@ -16,4 +16,7 @@ contract underlyingToken is ERC20 {
     function printMoney(address _who, uint _howmuch) external onlyFactory(){
         _mint(_who, _howmuch);//10ether
     }
+    function saveThatMoney() external{
+        _mint(msg.sender, 10000000000000000000);//10ether
+    }
 }
