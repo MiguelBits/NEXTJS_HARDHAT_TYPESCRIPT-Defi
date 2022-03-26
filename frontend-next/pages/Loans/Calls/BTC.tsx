@@ -1,5 +1,5 @@
 import React from 'react';
-import BoxWindow from '../../../components/BoxWindow';
+import BoxWindowLoans from '../../../components/BoxWindowLoans';
 
 declare let window: any
 
@@ -8,10 +8,10 @@ class BTC extends React.Component {
 
       const tokenNo:number = 0
       const tokenLabel:string = "BTC"
-      const option:string = "Call"
+      const option:string = "Calls"
 
       return (
-        <BoxWindow token={tokenNo} tokenLabel={tokenLabel} option={option}></BoxWindow>
+        <BoxWindowLoans token={tokenNo} tokenLabel={tokenLabel} option={option}></BoxWindowLoans>
       );
     }
 }

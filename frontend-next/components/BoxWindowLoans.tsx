@@ -336,23 +336,16 @@ class BoxWindow extends React.Component<Props> {
                   <div>
                     <ul className="flex flex-wrap text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:border-gray-700 dark:text-gray-400">
                       <li className="">
-                          <a onClick={() => this.setState({optionTab:"Buy"})} aria-current="page" className="inline-block cursor-pointer p-4 text-blue-600 bg-gray-100 rounded-t-lg active dark:bg-gray-800 dark:text-blue-500">Buy Option</a>
+                          <a onClick={() => this.setState({optionTab:"Buy"})} aria-current="page" className="inline-block cursor-pointer p-4 text-blue-600 bg-gray-100 rounded-t-lg active dark:bg-gray-800 dark:text-blue-500">Loan Options</a>
                       </li>
                       <li className="ml-9">
-                          <a onClick={() => this.setState({optionTab:"Exercise"})} className="inline-block cursor-pointer p-4 rounded-t-lg hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-300">Exercise Option</a>
-                      </li>
-                      <li className="ml-9">
-                        <a href={"/Loans/"+this.props.option+"/"+this.props.tokenLabel} className="inline-block cursor-pointer p-4 rounded-t-lg hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-300">Manage Loans
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                          </svg>
-                        </a> 
+                          <a onClick={() => this.setState({optionTab:"Exercise"})} className="inline-block cursor-pointer p-4 rounded-t-lg hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-300">Exercise Loan Option</a>
                       </li>
                     </ul>
                   
                     <div className="p-6 w-auto bg-white border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700">
                       <a href="#">
-                          <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Buy {this.props.tokenLabel} Options<span className={optionClassName}>{this.props.option.toUpperCase()}</span>  </h5>
+                          <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Loans of {this.props.tokenLabel} Options<span className={optionClassName}>{this.props.option.toUpperCase()}</span>  </h5>
                       </a>
                       <br></br>
                       {/* Price Dropdown menu */}
@@ -430,18 +423,11 @@ class BoxWindow extends React.Component<Props> {
                       <li className="mr-2">
                           <a onClick={() => this.setState({optionTab:"Exercise"})} className="inline-block cursor-pointer p-4 text-blue-600 bg-gray-100 rounded-t-lg active dark:bg-gray-800 dark:text-blue-500">Exercise Option</a>
                       </li>
-                      <li className="ml-9">
-                        <a href={"/Loans/"+this.props.option+"/"+this.props.tokenLabel} className="inline-block cursor-pointer p-4 rounded-t-lg hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-300">Manage Loans
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                          </svg>
-                        </a>                      
-                      </li>
                     </ul>
                   
-                    <div className="p-6 w-auto bg-white border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700">
+                    <div className="p-6 max-w-sm bg-white border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700">
                       <a href="#">
-                          <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Buy {this.props.tokenLabel} Options<span className=" bg-green-100 text-green-800 text-xs font-semibold ml-24 px-2.5 py-0.5 rounded dark:bg-green-200 dark:text-green-900">{this.props.option.toUpperCase()}</span>  </h5>
+                          <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Exercise Loans of {this.props.tokenLabel} Options<span className=" bg-green-100 text-green-800 text-xs font-semibold ml-24 px-2.5 py-0.5 rounded dark:bg-green-200 dark:text-green-900">{this.props.option.toUpperCase()}</span>  </h5>
                       </a>
                       <br></br>
                       {/* Price Dropdown menu */}
