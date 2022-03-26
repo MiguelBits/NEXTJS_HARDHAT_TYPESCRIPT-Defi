@@ -32,6 +32,7 @@ class BoxWindow extends React.Component<Props> {
       fee: "100000000000000000",
       howmany: 0,
       orderNo: 0,
+      needApprove: true,
 
     }
     
@@ -45,8 +46,7 @@ class BoxWindow extends React.Component<Props> {
             this.getHowManyAntiOptions()   
             this.getAntiStrikes()
             this.getBalanceAntiOptions()    
-        }
-           
+        }          
         
     };
     getHowManyOptions = async () => {
@@ -294,6 +294,29 @@ class BoxWindow extends React.Component<Props> {
             console.log("Ethereum object does not exist");
           }
       }
+
+      needApprove = async () =>{
+        const { ethereum } = window;
+        if (ethereum) {
+          
+          const provider = new ethers.providers.Web3Provider(ethereum);
+          const signer = provider.getSigner();
+          const accounts = await provider.listAccounts();
+
+          const tokenContract = new ethers.Contract(tokenAddress[this.state.token], erc20ABI, signer);
+          tokenContract.allowance(accounts[0],factoryAddress).then((result:any)=>{
+            if(ethers.utils.formatEther(result.toString()) >= this.state.amountOptions){
+              return false
+            }
+            else{
+              return true
+            }
+          })
+        }else{
+          console.log("Ethereum object does not exist");
+        }
+      }
+
     parseDate = (result:any) => {
       var a = new Date(result * 1000);
       var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -310,6 +333,10 @@ class BoxWindow extends React.Component<Props> {
       this.setState({selectedPrice:item})
       this.setState({selectedDeadline:this.state.strikeDeadlineOption[i]})
       this.setState({orderNo:i})
+    }
+    changeAmounts = (value:any) => {
+      this.setState({amountOptions:value})
+      this.setState({needApprove:this.needApprove()})
     }
     checkCallOrPut =() => {
         if(this.props.option == "Calls"){
@@ -408,7 +435,7 @@ class BoxWindow extends React.Component<Props> {
                             "
                             id="exampleText0"
                             placeholder="Amount of Options to Buy"
-                            onChange={(e)=>this.setState({amountOptions:e.target.value})}
+                            onChange={(e)=>this.changeAmounts(e.target.value)}
                           />
                         </div>
                       </div>
@@ -417,8 +444,12 @@ class BoxWindow extends React.Component<Props> {
                           Buy Option
                           <svg className="ml-2 -mr-1 w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
                       </a>
-                      <button type="button" onClick={() => this.approveToken()} className="ml-24 inline-block px-6 py-2 border-2 border-blue-600 text-blue-600 font-medium text-xs leading-tight uppercase rounded-full hover:bg-black hover:bg-opacity-5 focus:outline-none focus:ring-0 transition duration-150 ease-in-out">Approve</button>
-
+                      <button type="button" onClick={() => this.approveToken()} className={this.state.needApprove ?
+                        "ml-48 inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded-full shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out"
+                        :
+                        "ml-48 inline-block px-6 py-2 border-2 border-blue-600 text-blue-600 font-medium text-xs leading-tight uppercase rounded-full hover:bg-black hover:bg-opacity-5 focus:outline-none focus:ring-0 transition duration-150 ease-in-out"}>
+                        {this.state.needApprove ? "Approve":"Approved"}
+                      </button>
                     </div>
                   </div>
                   :
@@ -496,7 +527,7 @@ class BoxWindow extends React.Component<Props> {
                             "
                             id="exampleText0"
                             placeholder="Amount of Options to Exercise"
-                            onChange={(e)=>this.setState({amountOptions:e.target.value})}
+                            onChange={(e)=>this.changeAmounts(e.target.value)}
                           />
                         </div>
                       </div>
@@ -505,7 +536,12 @@ class BoxWindow extends React.Component<Props> {
                           Exercise Option
                           <svg className="ml-2 -mr-1 w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
                       </a>
-                      <button type="button" onClick={() => this.approveToken()} className="ml-20 inline-block px-6 py-2 border-2 border-blue-600 text-blue-600 font-medium text-xs leading-tight uppercase rounded-full hover:bg-black hover:bg-opacity-5 focus:outline-none focus:ring-0 transition duration-150 ease-in-out">Approve</button>
+                      <button type="button" onClick={() => this.approveToken()} className={this.state.needApprove ?
+                        "ml-48 inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded-full shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out"
+                        :
+                        "ml-48 inline-block px-6 py-2 border-2 border-blue-600 text-blue-600 font-medium text-xs leading-tight uppercase rounded-full hover:bg-black hover:bg-opacity-5 focus:outline-none focus:ring-0 transition duration-150 ease-in-out"}>
+                        {this.state.needApprove ? "Approve":"Approved"}
+                      </button>
 
                     </div>
                   </div>
