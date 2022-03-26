@@ -2,7 +2,7 @@ import React from 'react'
 import Head from 'next/head'
 import styles from '../styles/Home.module.css'
 import { ethers } from 'ethers';
-import {tokenAddress, token2Address, tokenABI, factoryAddress, factoryABI, erc20ABI} from "./contracts_abi"
+import {tokenAddress, tokenABI, factoryAddress, factoryABI, erc20ABI} from "./contracts_abi"
 import TopBar from "../components/TopBar"
 import { FaEthereum } from "react-icons/fa";
 
@@ -26,18 +26,38 @@ export default class Home extends React.Component {
     },
 
     tokens: ["BTC", "LINK"],
-    balance: [],
-    prices: [],
     tvls: [],
-    apys_calls: [],
-    apys_puts: [],
+    apys_calls: [[]],
+    apys_puts: [[]],
+    manyOptions: [0],
+
 
   }
 
   componentDidMount = () => {
+    this.getHowManyOptions()
     this.getTVL()
     this.getAPYs_calls()
     this.getAPYs_puts()
+  }
+  getHowManyOptions = async () => {
+    const { ethereum } = window;
+    if (ethereum) {
+      
+      const provider = new ethers.providers.Web3Provider(ethereum);
+      const signer = provider.getSigner();
+
+      const factoryContract = new ethers.Contract(factoryAddress, factoryABI, signer);
+
+      for(let i = 0; i<this.state.tokens.length;i++){
+        await factoryContract.getHowManyOptions(tokenAddress[i]).then((result:any) => {
+          this.setState({manyOptions:ethers.utils.formatEther(result)})
+        })
+      }      
+
+    }else{
+      console.log("Ethereum object does not exist");
+    }
   }
   getTVL = async () => {
     const { ethereum } = window;
@@ -47,14 +67,15 @@ export default class Home extends React.Component {
       const signer = provider.getSigner();
 
       let tvls:any = []
-
+      
       const factoryContract = new ethers.Contract(factoryAddress, factoryABI, signer);
-      await factoryContract.getTVL(tokenAddress).then((result:any ) =>{
-        tvls.push(ethers.utils.formatEther(result).slice(0,6))
-      })
-      await factoryContract.getTVL(token2Address).then((result:any ) =>{
-        tvls.push(ethers.utils.formatEther(result).slice(0,6))
-      })
+      for(let k = 0; k < this.state.tokens.length; k++){
+        await factoryContract.getTVL(tokenAddress[k]).then((result:any ) =>{
+          tvls.push(ethers.utils.formatEther(result).slice(0,2))
+        })
+      }
+      
+
 
       this.setState({tvls:tvls});
 
@@ -69,15 +90,18 @@ export default class Home extends React.Component {
       const provider = new ethers.providers.Web3Provider(ethereum);
       const signer = provider.getSigner();
 
-      let apys:any = []
+      let apys:any = [[]]
 
       const factoryContract = new ethers.Contract(factoryAddress, factoryABI, signer);
-      await factoryContract.getOptionApy(tokenAddress).then((result:any ) =>{
-        apys.push(result.toString())
-      })
-      await factoryContract.getOptionApy(token2Address).then((result:any ) =>{
-        apys.push(result.toString())
-      })
+      for(let k = 0; k < this.state.tokens.length; k++){
+        for(let i = 0; i<=this.state.manyOptions[k]; i++){
+          //console.log(tokenAddress[k])
+          await factoryContract.getOptionApy(tokenAddress[k],i).then((result:any ) =>{
+            //console.log("shit "+result.toString())
+            apys[k].push(result.toString())
+          })
+        }
+      }
 
       this.setState({apys_calls:apys});
 
@@ -92,15 +116,16 @@ export default class Home extends React.Component {
       const provider = new ethers.providers.Web3Provider(ethereum);
       const signer = provider.getSigner();
 
-      let apys:any = []
+      let apys:any = [[]]
 
       const factoryContract = new ethers.Contract(factoryAddress, factoryABI, signer);
-      await factoryContract.getAntiOptionApy(tokenAddress).then((result:any ) =>{
-        apys.push(result.toString())
-      })
-      await factoryContract.getAntiOptionApy(token2Address).then((result:any ) =>{
-        apys.push(result.toString())
-      })
+      for(let k = 0; k < this.state.tokens.length; k++){
+        for(let i = 0; i<=this.state.manyOptions[k]; i++){
+          await factoryContract.getAntiOptionApy(tokenAddress[k],i).then((result:any ) =>{
+            apys[k].push(result.toString())
+          })
+        }
+      }
 
       this.setState({apys_puts:apys});
 
@@ -133,11 +158,11 @@ export default class Home extends React.Component {
                   <ul className='ml-5 flex flex-wrap font-medium text-center text-gray-500'>
                     <li className='mr-2'>
                       <a className="inline-block p-4 text-blue-600 bg-gray-100 rounded-md active dark:bg-gray-800 dark:text-blue-500">
-                        TVL: {this.state.tvls[i]} <FaEthereum className='inline'/>
+                        TVL: {this.state.tvls[i]}/<FaEthereum className='inline'/>
                       </a>
                     </li>
                     <li className="mr-2">
-                        <a className="inline-block p-4 text-blue-600 bg-gray-100 rounded-md active dark:bg-gray-800 dark:text-blue-500">APY:{this.state.apys_calls[i]}%</a>
+                        <a className="inline-block p-4 text-blue-600 bg-gray-100 rounded-md active dark:bg-gray-800 dark:text-blue-500">APY: {this.state.apys_calls[i]}%</a>
                     </li>
                   </ul>
                   {/*<p className={styles.epoch}>Epoch: {this.state.strikesDeadline[i]}</p>*/}
@@ -157,14 +182,14 @@ export default class Home extends React.Component {
                   <h2>{item}
                     <span className=" bg-red-100 text-red-800 text-xs font-semibold ml-24 px-2.5 py-0.5 rounded dark:bg-red-200 dark:text-red-900">PUTS</span>  
                   </h2>
-                  <ul className='ml-5 flex flex-wrap font-medium text-center text-gray-500'>
+                  <ul className='inline-block ml-5 flex flex-wrap font-medium text-center text-gray-500'>
                     <li className='mr-2'>
                       <a className="inline-block p-4 text-blue-600 bg-gray-100 rounded-md active dark:bg-gray-800 dark:text-blue-500">
-                        TVL: {this.state.tvls[i]} <FaEthereum className='inline'/>
+                        TVL:{this.state.tvls[i]}<FaEthereum className='inline'/>
                       </a>
                     </li>
                     <li className="mr-2">
-                        <a className="inline-block p-4 text-blue-600 bg-gray-100 rounded-md active dark:bg-gray-800 dark:text-blue-500">APY:{this.state.apys_puts[i]}%</a>
+                        <a className="inline-block p-4 text-blue-600 bg-gray-100 rounded-md active dark:bg-gray-800 dark:text-blue-500">APY:{this.state.apys_puts}%</a>
                     </li>
                   </ul>
                   {/*<p className={styles.epoch}>Epoch: {this.state.strikesDeadline[i]}</p>*/}

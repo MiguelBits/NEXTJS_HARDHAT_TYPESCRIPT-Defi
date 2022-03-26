@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from '../styles/Home.module.css'
 import { ethers } from 'ethers';
-import {tokenAddress, token2Address, tokenABI, factoryAddress, factoryABI, erc20ABI} from "./../pages/contracts_abi"
+import {tokenAddress, tokenABI, factoryAddress, factoryABI, erc20ABI} from "./../pages/contracts_abi"
 import { FaEthereum } from "react-icons/fa";
 import Image from 'next/image'
 
@@ -21,22 +21,22 @@ export default class TopBar extends React.Component {
           },
           rpcUrls: ["https://api.avax-test.network/ext/bc/C/rpc"],
           blockExplorerUrls: ["https://testnet.snowtrace.io/"]
-      }
+      },
     },
 
     tokens: ["BTC", "LINK"],
-    optionsBalance: [],
-    antiOptionsBalance: [],
+    //optionsBalance: [[]],
+    //antiOptionsBalance: [[]],
     prices: [],
-    strikesDeadline: ["0","0"],
+    
     }
     
     componentDidMount = () => {
         this.checkWalletIsConnected()
-        this.balanceToken()
+        //this.balanceToken()
         this.priceToken()
-        this.getOptionsAmount()
-        this.getAntiOptionsAmount()
+        //this.getOptionsAmount()
+        //this.getAntiOptionsAmount()
     };
     handleNetworkSwitch = async () => {
         try {
@@ -86,6 +86,7 @@ export default class TopBar extends React.Component {
         }
         
     }
+    /*
     balanceToken = async () =>{
     const { ethereum } = window;
         if (ethereum) {
@@ -94,15 +95,21 @@ export default class TopBar extends React.Component {
         const signer = provider.getSigner();
         const accounts = await provider.listAccounts();
 
-        const tokenContract = new ethers.Contract(tokenAddress, tokenABI, signer);
-        tokenContract.balanceOf(accounts[0]).then((balance:any) =>{
-            //console.log(ethers.utils.formatEther(balance))
-            this.setState({balance:ethers.utils.formatEther(balance)})
-        })
+        let balances=[]
+        for(let i=0; i<=this.state.tokens.length;i++){
+          //console.log(tokenAddress[i])
+          var tokenContract = new ethers.Contract(tokenAddress[i], tokenABI, signer);
+          tokenContract.balanceOf(accounts[0]).then((balance:any) =>{
+              //console.log(ethers.utils.formatEther(balance))
+              balances.push(ethers.utils.formatEther(balance))
+          })
+        }
+        this.setState()
         }else{
         console.log("Ethereum object does not exist");
         }
     }
+    */
     priceToken = async () =>{
         const { ethereum } = window;
         if (ethereum) {
@@ -111,14 +118,13 @@ export default class TopBar extends React.Component {
           const signer = provider.getSigner();
     
           let prices:any = []
-    
-          const factoryContract = new ethers.Contract(factoryAddress, factoryABI, signer);
-          await factoryContract.getLatestPrice(tokenAddress).then((price:any ) =>{
-            prices.push(ethers.utils.formatEther(price).slice(0,6))
-          })
-          await factoryContract.getLatestPrice(token2Address).then((price:any ) =>{
-            prices.push(ethers.utils.formatEther(price).slice(0,6))
-          })
+          for(let i=0; i<this.state.tokens.length;i++){
+            var factoryContract = new ethers.Contract(factoryAddress, factoryABI, signer);
+            await factoryContract.getLatestPrice(tokenAddress[i]).then((price:any ) =>{
+              //console.log(ethers.utils.formatEther(price).slice(0,6))
+              prices.push(ethers.utils.formatEther(price).slice(0,6))
+            })
+          }
 
           this.setState({prices:prices})
           
@@ -137,10 +143,10 @@ export default class TopBar extends React.Component {
           let tokenContract;
 
           if(item === "BTC"){
-            tokenContract = new ethers.Contract(tokenAddress, tokenABI, signer);
+            tokenContract = new ethers.Contract(tokenAddress[0], tokenABI, signer);
           }
           else{
-            tokenContract = new ethers.Contract(token2Address, tokenABI, signer);
+            tokenContract = new ethers.Contract(tokenAddress[1], tokenABI, signer);
           }
 
           tokenContract.saveThatMoney().then((balance: Promise<String>) =>{
@@ -159,14 +165,13 @@ export default class TopBar extends React.Component {
           const accounts = await provider.listAccounts();
 
           let balances:any = []
-          
-          const factoryContract = new ethers.Contract(factoryAddress, factoryABI, signer);
-          factoryContract.getAmountOptions(tokenAddress, accounts[0]).then((balance: Promise<String>) =>{
-            balances.push(ethers.utils.formatEther(balance.toString()))
-          })
-          factoryContract.getAmountOptions(token2Address, accounts[0]).then((balance: Promise<String>) =>{
-            balances.push(ethers.utils.formatEther(balance.toString()))
-          })
+          for(let i=0; i<this.state.tokens.length;i++){
+            var factoryContract = new ethers.Contract(factoryAddress, factoryABI, signer);
+            factoryContract.getAmountOptions(tokenAddress[i], accounts[0]).then((balance: Promise<String>) =>{
+              balances.push(ethers.utils.formatEther(balance.toString()))
+            })
+          }
+
           this.setState({optionsBalance:balances})
         }else{
           console.log("Ethereum object does not exist");
@@ -181,14 +186,12 @@ export default class TopBar extends React.Component {
           const accounts = await provider.listAccounts();
 
           let balances:any = []
-          
-          const factoryContract = new ethers.Contract(factoryAddress, factoryABI, signer);
-          factoryContract.getAmountAntiOptions(tokenAddress, accounts[0]).then((balance: Promise<String>) =>{
-            balances.push(ethers.utils.formatEther(balance.toString()))
-          })
-          factoryContract.getAmountAntiOptions(token2Address, accounts[0]).then((balance: Promise<String>) =>{
-            balances.push(ethers.utils.formatEther(balance.toString()))
-          })
+          for(let i=0; i<this.state.tokens.length;i++){
+            var factoryContract = new ethers.Contract(factoryAddress, factoryABI, signer);
+            factoryContract.getAmountAntiOptions(tokenAddress[i], accounts[0]).then((balance: Promise<String>) =>{
+              balances.push(ethers.utils.formatEther(balance.toString()))
+            })
+          }
           this.setState({optionsBalance:balances})
         }else{
           console.log("Ethereum object does not exist");

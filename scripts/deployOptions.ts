@@ -2,20 +2,9 @@ import { ethers,waffle } from "hardhat"
 import { UnderlyingToken__factory, OptionsFactory__factory } from "../typechain"
 
 const main = async(): Promise<any> => {
-  
-  const strikePrice = "16000000000000000000"
-  const strikeAntiPrice = "12000000000000000000"
-
-  const strikePrice2 = "6119000000000000"
-  const strikeAntiPrice2 = "4119000000000000"
-
-  const supplyOptions = "5000000000000000000"
-  const supplyAntiOptions = "3000000000000000000"
-
-  const supplyOptions2 = "8000000000000000000"
-  const supplyAntiOptions2 = "10000000000000000000"
 
   const fee = ethers.utils.parseEther("0.1").toString()
+
   const priceOracle = "0x378E78509a907B1Ec5c24d9f0243BD39f7A7b007"
   const priceOracle2 = "0xf4060f80f295b34e0C2471461ba43745Aeb186d6"
 
@@ -51,20 +40,128 @@ const main = async(): Promise<any> => {
   //CREATE OPTION AND ANTI OPTION IN FACTORY
 
   //token1 options
-  var timestamp = Math.round(new Date().getTime() / 1000); //get timestamp for now
-  timestamp += 3600*24; //now + 24h
-  const apy_ratio = 20;
-
+  console.log("Creating Option Token")
   txn = await optionsFactory.createOptionsToken(tokenizer.address, priceOracle)
   txn.wait()
+  
+  console.log("\nDealing Token1\n")
+  //ROUND 0
+  let strikePrice = "16000000000000000000"
+  let strikeAntiPrice = "12000000000000000000"
+  let supplyOptions = "5000000000000000000"
+  let supplyAntiOptions = "3000000000000000000"
+  let roundOption = 0; 
+  let timestamp = Math.round(new Date().getTime() / 1000); //get timestamp for now
+  timestamp += 3600*24; //now + 24h
+  let apy_ratio = 20;
+
+  console.log("\nRound: "+roundOption)
+
+  console.log("Approving Token... to activate option and fund factory...")
+  txn = await tokenizer.approve(optionsFactory.address,supplyOptions)//5 ether
+  txn.wait()
+  console.log("Approved\n")
+  console.log("Activate Option...")
+
+  txn = await optionsFactory.activateOption(tokenizer.address,strikePrice,timestamp,supplyOptions, apy_ratio,roundOption)//strike price 3ether, fund with 5ether, 20%ratio
+  txn.wait()
+  console.log("Active!\n")
+  
+  console.log("Approving Token... to activate anti option and fund factory...")
+  txn = await tokenizer.approve(optionsFactory.address,supplyOptions)//5 ether
+  txn.wait()
+  console.log("Approved\n")
+
+  console.log("Activate Anti Option")
+  txn = await optionsFactory.activateAntiOption(tokenizer.address,strikeAntiPrice,timestamp,supplyAntiOptions, apy_ratio-5,roundOption)//strike price 3ether, fund with 5ether, 15%ratio
+  txn.wait()
+  console.log("Active!\n")
+
+  //check balances in every actor
+  balance = await tokenizer.balanceOf(signers[0].address)
+
+  let optionBalance = await optionsFactory.getAmountOptions(tokenizer.address,optionsFactory.address,roundOption)
+  let antiOptionBalance = await optionsFactory.getAmountAntiOptions(tokenizer.address,optionsFactory.address,roundOption)
+  let factoryTokenBalance = await optionsFactory.getTokenBalance(tokenizer.address);
+
+  console.log("After New Balance: "+balance.toString())
+  console.log("Factory => Option Balance: "+optionBalance.toString())
+  console.log("Factory => Anti Option Balance: "+antiOptionBalance.toString())
+  console.log("Factory => Underlying Token Balance " + factoryTokenBalance.toString())
+
+  //ROUND 1
+  roundOption += 1;
+  timestamp = Math.round(new Date().getTime() / 1000); //get timestamp for now
+  timestamp += 3600*34; //now + 24h
+  apy_ratio = 50;
+
+  console.log("\nRound: "+roundOption)
+  
+  strikePrice = "18000000000000000000"
+  supplyOptions = "10000000000000000000"
+  strikeAntiPrice = "10000000000000000000"
+  supplyAntiOptions = "5000000000000000000"
+
+  console.log("Adding Options to token...")
+  txn = await optionsFactory.addOptionsToken(tokenizer.address)
+  txn.wait()
+  console.log("Added")
+
+  console.log("Approving Token... to activate option and fund factory...")
+  txn = await tokenizer.approve(optionsFactory.address,supplyOptions)//5 ether
+  txn.wait()
+  console.log("Approved\n")
+  console.log("Activate Option...")
+  txn = await optionsFactory.activateOption(tokenizer.address,strikePrice,timestamp,supplyOptions, apy_ratio,roundOption)//strike price 3ether, fund with 5ether, 20%ratio
+  txn.wait()
+  console.log("Active!\n")
+  
+  console.log("Approving Token... to activate anti option and fund factory...")
+  txn = await tokenizer.approve(optionsFactory.address,supplyOptions)//5 ether
+  txn.wait()
+  console.log("Approved")
+
+  console.log("Activate Anti Option")
+  txn = await optionsFactory.activateAntiOption(tokenizer.address,strikeAntiPrice,timestamp,supplyAntiOptions, apy_ratio-5,roundOption)//strike price 3ether, fund with 5ether, 15%ratio
+  txn.wait()
+  console.log("Active!\n")
+
+  //check balances in every actor
+  balance = await tokenizer.balanceOf(signers[0].address)
+
+  optionBalance = await optionsFactory.getAmountOptions(tokenizer.address,optionsFactory.address,roundOption)
+  antiOptionBalance = await optionsFactory.getAmountAntiOptions(tokenizer.address,optionsFactory.address,roundOption)
+  factoryTokenBalance = await optionsFactory.getTokenBalance(tokenizer.address);
+
+  console.log("After New Balance: "+balance.toString())
+  console.log("Factory => Option Balance: "+optionBalance.toString())
+  console.log("Factory => Anti Option Balance: "+antiOptionBalance.toString())
+  console.log("Factory => Underlying Token Balance " + factoryTokenBalance.toString())
+
+  //ROUND 2
+  roundOption += 1;
+  timestamp = Math.round(new Date().getTime() / 1000); //get timestamp for now
+  timestamp += 3600*48; //now + 24h
+  apy_ratio = 10;
+  console.log("\nRound: "+roundOption)
+  
+  strikePrice = "20000000000000000000"
+  supplyOptions = "3000000000000000000"
+  strikeAntiPrice = "14000000000000000000"
+  supplyAntiOptions = "6000000000000000000"
+
+  console.log("Adding Options to token...")
+  txn = await optionsFactory.addOptionsToken(tokenizer.address)
+  txn.wait()
+  console.log("Added")
 
   console.log("Approving Token... to activate option and fund factory...")
   txn = await tokenizer.approve(optionsFactory.address,supplyOptions)//5 ether
   txn.wait()
   console.log("Approved")
+  console.log("Activate Option...")
 
-  console.log("Activate Option")
-  txn = await optionsFactory.activateOption(tokenizer.address,strikePrice,timestamp,supplyOptions, apy_ratio)//strike price 3ether, fund with 5ether, 20%ratio
+  txn = await optionsFactory.activateOption(tokenizer.address,strikePrice,timestamp,supplyOptions, apy_ratio,roundOption)//strike price 3ether, fund with 5ether, 20%ratio
   txn.wait()
   console.log("Active!")
   
@@ -74,16 +171,16 @@ const main = async(): Promise<any> => {
   console.log("Approved")
 
   console.log("Activate Anti Option")
-  txn = await optionsFactory.activateAntiOption(tokenizer.address,strikeAntiPrice,timestamp,supplyAntiOptions, apy_ratio-5)//strike price 3ether, fund with 5ether, 15%ratio
+  txn = await optionsFactory.activateAntiOption(tokenizer.address,strikeAntiPrice,timestamp,supplyAntiOptions, apy_ratio-5,roundOption)//strike price 3ether, fund with 5ether, 15%ratio
   txn.wait()
   console.log("Active!")
 
   //check balances in every actor
   balance = await tokenizer.balanceOf(signers[0].address)
 
-  let optionBalance = await optionsFactory.getAmountOptions(tokenizer.address,optionsFactory.address)
-  let antiOptionBalance = await optionsFactory.getAmountAntiOptions(tokenizer.address,optionsFactory.address)
-  let factoryTokenBalance = await optionsFactory.getTokenBalance(tokenizer.address);
+  optionBalance = await optionsFactory.getAmountOptions(tokenizer.address,optionsFactory.address,roundOption)
+  antiOptionBalance = await optionsFactory.getAmountAntiOptions(tokenizer.address,optionsFactory.address,roundOption)
+  factoryTokenBalance = await optionsFactory.getTokenBalance(tokenizer.address);
 
   console.log("After New Balance: "+balance.toString())
   console.log("Factory => Option Balance: "+optionBalance.toString())
@@ -91,9 +188,15 @@ const main = async(): Promise<any> => {
   console.log("Factory => Underlying Token Balance " + factoryTokenBalance.toString())
 
   //token2 options
-  var timestamp2 = Math.round(new Date().getTime() / 1000); //get timestamp for now
+  //ROUND 0
+  roundOption = 0;
+  let timestamp2 = Math.round(new Date().getTime() / 1000); //get timestamp for now
   timestamp2 += 3600*12; //now + 24h
-  const apy_ratio2 = 40;
+  let apy_ratio2 = 40;
+  let strikePrice2 = "6119000000000000"
+  let strikeAntiPrice2 = "4119000000000000"
+  let supplyOptions2 = "8000000000000000000"
+  let supplyAntiOptions2 = "10000000000000000000"
 
   txn = await optionsFactory.createOptionsToken(tokenizer2.address, priceOracle2)
   txn.wait()
@@ -103,7 +206,7 @@ const main = async(): Promise<any> => {
   console.log("Approved")
 
   console.log("Activate 2 Option")
-  txn = await optionsFactory.activateOption(tokenizer2.address,strikePrice2,timestamp2,supplyOptions2, apy_ratio2)//strike price 3ether, fund with 5ether, 40%ratio
+  txn = await optionsFactory.activateOption(tokenizer2.address,strikePrice2,timestamp2,supplyOptions2, apy_ratio2,roundOption)//strike price 3ether, fund with 5ether, 40%ratio
   txn.wait()
   console.log("Active 2 Option")
 
@@ -112,22 +215,114 @@ const main = async(): Promise<any> => {
   console.log("Approved")
 
   console.log("Activate 2 Anti Option")
-  txn = await optionsFactory.activateAntiOption(tokenizer2.address,strikeAntiPrice2,timestamp2,supplyAntiOptions2, apy_ratio2-15)//strike price 3ether, fund with 5ether, 25%ratio
+  txn = await optionsFactory.activateAntiOption(tokenizer2.address,strikeAntiPrice2,timestamp2,supplyAntiOptions2, apy_ratio2-15,roundOption)//strike price 3ether, fund with 5ether, 25%ratio
   txn.wait()
   console.log("Active 2 Anti Option")
 
   //check balances in every actor
   balance2 = await tokenizer2.balanceOf(signers[0].address)
 
-  let optionBalance2 = await optionsFactory.getAmountOptions(tokenizer2.address,optionsFactory.address)
-  let antiOptionBalance2 = await optionsFactory.getAmountAntiOptions(tokenizer2.address,optionsFactory.address)
+  let optionBalance2 = await optionsFactory.getAmountOptions(tokenizer2.address,optionsFactory.address,roundOption)
+  let antiOptionBalance2 = await optionsFactory.getAmountAntiOptions(tokenizer2.address,optionsFactory.address,roundOption)
   let factoryTokenBalance2 = await optionsFactory.getTokenBalance(tokenizer2.address);
 
   console.log("After New Balance: "+balance2.toString())
   console.log("Factory => Option Balance: "+optionBalance2.toString())
   console.log("Factory => Anti Option Balance: "+antiOptionBalance2.toString())
   console.log("Factory => Underlying Token Balance " + factoryTokenBalance2.toString())
+  //ROUND 1
+  roundOption +=1 ;
+  timestamp2 = Math.round(new Date().getTime() / 1000); //get timestamp for now
+  timestamp2 += 3600*12; //now + 24h
+  apy_ratio2 = 40;
+  strikePrice2 = "8819000000000000"
+  strikeAntiPrice2 = "4666000000000000"
+  supplyOptions2 = "3000000000000000000"
+  supplyAntiOptions2 = "90000000000000000000"
 
+  console.log("Adding Options to token...")
+  txn = await optionsFactory.addOptionsToken(tokenizer.address)
+  txn.wait()
+  console.log("Added")
+
+  console.log("Approving Token2... to activate option and fund factory...")
+  await tokenizer2.approve(optionsFactory.address,supplyOptions2)//5 ether
+  console.log("Approved")
+
+  console.log("Activate 2 Option")
+  txn = await optionsFactory.activateOption(tokenizer2.address,strikePrice2,timestamp2,supplyOptions2, apy_ratio2,roundOption)//strike price 3ether, fund with 5ether, 40%ratio
+  txn.wait()
+  console.log("Active 2 Option")
+
+  console.log("Approving Token2... to activate anti option and fund factory...")
+  await tokenizer2.approve(optionsFactory.address,supplyOptions2)//5 ether
+  console.log("Approved")
+
+  console.log("Activate 2 Anti Option")
+  txn = await optionsFactory.activateAntiOption(tokenizer2.address,strikeAntiPrice2,timestamp2,supplyAntiOptions2, apy_ratio2-15,roundOption)//strike price 3ether, fund with 5ether, 25%ratio
+  txn.wait()
+  console.log("Active 2 Anti Option")
+
+  //check balances in every actor
+  balance2 = await tokenizer2.balanceOf(signers[0].address)
+
+  optionBalance2 = await optionsFactory.getAmountOptions(tokenizer2.address,optionsFactory.address,roundOption)
+  antiOptionBalance2 = await optionsFactory.getAmountAntiOptions(tokenizer2.address,optionsFactory.address,roundOption)
+  factoryTokenBalance2 = await optionsFactory.getTokenBalance(tokenizer2.address);
+
+  console.log("After New Balance: "+balance2.toString())
+  console.log("Factory => Option Balance: "+optionBalance2.toString())
+  console.log("Factory => Anti Option Balance: "+antiOptionBalance2.toString())
+  console.log("Factory => Underlying Token Balance " + factoryTokenBalance2.toString())
+  console.log("\nWill now buy options from factory\n")
+
+  //ROUND 2
+  roundOption +=1 ;
+  timestamp2 = Math.round(new Date().getTime() / 1000); //get timestamp for now
+  timestamp2 += 3600*12; //now + 24h
+  apy_ratio2 = 40;
+  strikePrice2 = "3319000000000000"
+  strikeAntiPrice2 = "2966000000000000"
+  supplyOptions2 = "3000000000000000000"
+  supplyAntiOptions2 = "40000000000000000000"
+  
+  console.log("Adding Options to token...")
+  txn = await optionsFactory.addOptionsToken(tokenizer.address)
+  txn.wait()
+  console.log("Added")
+
+  txn = await optionsFactory.createOptionsToken(tokenizer2.address, priceOracle2)
+  txn.wait()
+
+  console.log("Approving Token2... to activate option and fund factory...")
+  await tokenizer2.approve(optionsFactory.address,supplyOptions2)//5 ether
+  console.log("Approved")
+
+  console.log("Activate 2 Option")
+  txn = await optionsFactory.activateOption(tokenizer2.address,strikePrice2,timestamp2,supplyOptions2, apy_ratio2,roundOption)//strike price 3ether, fund with 5ether, 40%ratio
+  txn.wait()
+  console.log("Active 2 Option")
+
+  console.log("Approving Token2... to activate anti option and fund factory...")
+  await tokenizer2.approve(optionsFactory.address,supplyOptions2)//5 ether
+  console.log("Approved")
+
+  console.log("Activate 2 Anti Option")
+  txn = await optionsFactory.activateAntiOption(tokenizer2.address,strikeAntiPrice2,timestamp2,supplyAntiOptions2, apy_ratio2-15,roundOption)//strike price 3ether, fund with 5ether, 25%ratio
+  txn.wait()
+  console.log("Active 2 Anti Option")
+
+  //check balances in every actor
+  balance2 = await tokenizer2.balanceOf(signers[0].address)
+
+  optionBalance2 = await optionsFactory.getAmountOptions(tokenizer2.address,optionsFactory.address,roundOption)
+  antiOptionBalance2 = await optionsFactory.getAmountAntiOptions(tokenizer2.address,optionsFactory.address,roundOption)
+  factoryTokenBalance2 = await optionsFactory.getTokenBalance(tokenizer2.address);
+
+  console.log("After New Balance: "+balance2.toString())
+  console.log("Factory => Option Balance: "+optionBalance2.toString())
+  console.log("Factory => Anti Option Balance: "+antiOptionBalance2.toString())
+  console.log("Factory => Underlying Token Balance " + factoryTokenBalance2.toString())
   console.log("\nWill now buy options from factory\n")
   //Buy Option Simulation
   /*
