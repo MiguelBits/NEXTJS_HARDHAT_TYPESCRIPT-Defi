@@ -100,6 +100,16 @@ contract OptionsFactory {
         antiOption.mintOption(address(this), _amount);
 
     }
+    function deleteOption(address _underlyingToken, uint _orderNo) external onlyAdmin(){
+        require(allTokens[_underlyingToken].length > 0,"There are no options for this token");
+        //get tokens
+        delete allOptionTokens[_underlyingToken][_orderNo];
+    }
+    function deleteAntiOption(address _underlyingToken, uint _orderNo) external onlyAdmin(){
+        require(allTokens[_underlyingToken].length > 0,"There are no options for this token");
+        //get tokens
+        delete allAntiOptionTokens[_underlyingToken][_orderNo];
+    }
     //fund existing options with already defined strikes
     function fundOptions(address _underlyingToken, uint _amount, uint _orderNumber) public onlyAdmin(){
         require(allTokens[_underlyingToken].length > 0,"There are no options for this token");
