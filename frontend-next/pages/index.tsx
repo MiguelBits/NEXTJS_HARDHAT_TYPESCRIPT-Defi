@@ -158,7 +158,7 @@ export default class Home extends React.Component {
                   <ul className='ml-5 flex flex-wrap font-medium text-center text-gray-500'>
                     <li className='mr-2'>
                       <a className="inline-block p-4 text-blue-600 bg-gray-100 rounded-md active dark:bg-gray-800 dark:text-blue-500">
-                        TVL: {this.state.tvls[i]}/<FaEthereum className='inline'/>
+                        TVL: {this.state.tvls[i]}<FaEthereum className='inline'/>
                       </a>
                     </li>
                     <li className="mr-2">

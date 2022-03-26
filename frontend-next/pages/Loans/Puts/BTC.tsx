@@ -23,12 +23,12 @@ class BTC extends React.Component {
     }
     
     componentDidMount = () => {
-        this.getHowManyOptions()   
-        this.getStrikes()
-        this.getBalanceOptions()     
+        this.getHowManyAntiOptions()   
+        this.getAntiStrikes()
+        this.getBalanceAntiOptions()     
         
     };
-    getHowManyOptions = async () => {
+    getHowManyAntiOptions = async () => {
       const { ethereum } = window;
       if (ethereum) {
         
@@ -45,7 +45,7 @@ class BTC extends React.Component {
         console.log("Ethereum object does not exist");
       }
     }
-    getStrikes = async () =>{
+    getAntiStrikes = async () =>{
         const { ethereum } = window;
         if (ethereum) {
           
@@ -75,7 +75,7 @@ class BTC extends React.Component {
           console.log("Ethereum object does not exist");
         }
     }
-    getBalanceOptions = async () => {
+    getBalanceAntiOptions = async () => {
       const { ethereum } = window;
         if (ethereum) {
           
@@ -96,7 +96,7 @@ class BTC extends React.Component {
           console.log("Ethereum object does not exist");
         }
     }
-    buyOption = async (orderNo:any) => {
+    buyAntiOption = async (orderNo:any) => {
       const { ethereum } = window;
       if (ethereum) {
         //console.log(this.state.strikePriceOption)
@@ -110,7 +110,7 @@ class BTC extends React.Component {
         console.log("Ethereum object does not exist");
       }
     }
-    ExerciseOption = async (orderNo:any) => {
+    ExerciseAntiOption = async (orderNo:any) => {
       const { ethereum } = window;
       if (ethereum) {
         
@@ -123,20 +123,7 @@ class BTC extends React.Component {
         console.log("Ethereum object does not exist");
       }
     }
-    approveToken = async() => {
-      const { ethereum } = window;
-        if (ethereum) {
-          
-          const provider = new ethers.providers.Web3Provider(ethereum);
-          const signer = provider.getSigner();
-
-          const tokenContract = new ethers.Contract(tokenAddress[this.state.token], erc20ABI, signer);
-          await tokenContract.approve(factoryAddress,ethers.utils.parseEther(this.state.amountOptions))
-        }else{
-          console.log("Ethereum object does not exist");
-        }
-    }
-    approveExerciseToken = async() => {
+    approveExerciseAntiToken = async() => {
       const { ethereum } = window;
         if (ethereum) {
           
@@ -154,6 +141,20 @@ class BTC extends React.Component {
           console.log("Ethereum object does not exist");
         }
     }
+    approveToken = async() => {
+      const { ethereum } = window;
+        if (ethereum) {
+          
+          const provider = new ethers.providers.Web3Provider(ethereum);
+          const signer = provider.getSigner();
+
+          const tokenContract = new ethers.Contract(tokenAddress[this.state.token], erc20ABI, signer);
+          await tokenContract.approve(factoryAddress,ethers.utils.parseEther(this.state.amountOptions))
+        }else{
+          console.log("Ethereum object does not exist");
+        }
+    }
+
     parseDate = (result:any) => {
       var a = new Date(result * 1000);
       var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];

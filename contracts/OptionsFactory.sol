@@ -194,14 +194,14 @@ contract OptionsFactory {
         //get Strikes
         uint strikePrice = option.getStrikePrice();
         uint strikeDeadline = option.getStrikeDeadline();
-
-        require(strikeDeadline.sub(3600) <= block.timestamp &&  block.timestamp <=  strikeDeadline, "Time Options: Not in exercise window!");
-        require(msg.value >= strikePrice, "Did not send Ether equal to strike price!");
-
         //price calculus
         uint priceNow = uint(getLatestPrice(_underlyingToken));
 
         require(priceNow >= strikePrice, "Restricted from exercising losing position in Option!");
+
+        require(strikeDeadline.sub(3600) <= block.timestamp &&  block.timestamp <=  strikeDeadline, "Time Options: Not in exercise window!");
+        require(msg.value >= _amount.div(10e18).mul(priceNow), "Did not send Ether equal to strike price!");
+
 
         //approve token
         my_underlyingToken.approve(msg.sender, _amount);
@@ -210,10 +210,10 @@ contract OptionsFactory {
         option.burnOption(msg.sender, _amount);
         my_underlyingToken.transfer(msg.sender, _amount);
 
-        uint ratio = option.getApyRatio();
-        uint amount_w_ratio = _amount.div(ratio);
+        //uint ratio = option.getApyRatio();
+        //uint amount_w_ratio = _amount.div(ratio);
         //mint win ratio of price
-        my_underlyingToken.printMoney(msg.sender, amount_w_ratio);
+        //my_underlyingToken.printMoney(msg.sender, amount_w_ratio);
 
         emit exercisedOption(_underlyingToken, _amount);
     }
@@ -242,7 +242,7 @@ contract OptionsFactory {
         //transfer token exercised
         antiOption.burnOption(msg.sender, _amount);
 
-        my_underlyingToken.transfer(msg.sender, _amount);
+        my_underlyingToken.transfer(msg.sender, _amount.div(10e18).mul(priceNow));
 
         uint ratio = antiOption.getApyRatio();
         uint amount_w_ratio = _amount.div(ratio);
