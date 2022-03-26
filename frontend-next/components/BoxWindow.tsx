@@ -123,7 +123,7 @@ class BoxWindow extends React.Component<Props> {
           console.log("Ethereum object does not exist");
         }
     }
-    buyOption = async (orderNo:any) => {
+    buyOption = async () => {
       const { ethereum } = window;
       if (ethereum) {
         //console.log(this.state.strikePriceOption)
@@ -137,7 +137,7 @@ class BoxWindow extends React.Component<Props> {
         console.log("Ethereum object does not exist");
       }
     }
-    ExerciseOption = async (orderNo:any) => {
+    ExerciseOption = async () => {
       const { ethereum } = window;
       if (ethereum) {
         
@@ -249,7 +249,7 @@ class BoxWindow extends React.Component<Props> {
             console.log("Ethereum object does not exist");
           }
       }
-      buyAntiOption = async (orderNo:any) => {
+      buyAntiOption = async () => {
         const { ethereum } = window;
         if (ethereum) {
           //console.log(this.state.strikePriceOption)
@@ -263,7 +263,7 @@ class BoxWindow extends React.Component<Props> {
           console.log("Ethereum object does not exist");
         }
       }
-      ExerciseAntiOption = async (orderNo:any) => {
+      ExerciseAntiOption = async () => {
         const { ethereum } = window;
         if (ethereum) {
           

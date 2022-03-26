@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from '../styles/Home.module.css'
 import { ethers, BigNumber } from 'ethers';
-import {tokenAddress, tokenABI, factoryAddress, factoryABI, erc20ABI} from "./../pages/contracts_abi"
+import {tokenAddress, tokenABI, factoryAddress, factoryABI, loanFactory, loanABI, erc20ABI} from "./../pages/contracts_abi"
 import { FaEthereum } from "react-icons/fa";
 import TopBar from './TopBar';
 import Head from 'next/head'
@@ -22,7 +22,7 @@ class BoxWindow extends React.Component<Props> {
       option: this.props.option,
       tokenLabel: this.props.tokenLabel,
       
-      optionTab: "Buy",
+      optionTab: "Lend",
       strikePriceOption: [],
       strikeDeadlineOption: [],
       selectedPrice: "",
@@ -125,29 +125,29 @@ class BoxWindow extends React.Component<Props> {
           console.log("Ethereum object does not exist");
         }
     }
-    buyOption = async (orderNo:any) => {
+    buyOption = async () => {
       const { ethereum } = window;
       if (ethereum) {
         //console.log(this.state.strikePriceOption)
         const provider = new ethers.providers.Web3Provider(ethereum);
         const signer = provider.getSigner();
 
-        const factoryContract = new ethers.Contract(factoryAddress, factoryABI, signer);
-        const payFee = (BigNumber.from(this.state.fee).mul(this.state.amountOptions)).toString()
-        await factoryContract.buyOptions(tokenAddress[this.state.token],ethers.utils.parseEther(this.state.amountOptions), this.state.orderNo,{ value: payFee })
+        const factoryContract = new ethers.Contract(loanFactory, loanABI, signer);
+        const pay_plus_Fee = ((BigNumber.from(this.state.fee).mul(this.state.amountOptions)).add(ethers.utils.parseEther(this.state.amountOptions))).toString()
+        await factoryContract.createBasicLoan(tokenAddress[this.state.token], this.state.orderNo, true, { value: pay_plus_Fee })
       }else{
         console.log("Ethereum object does not exist");
       }
     }
-    ExerciseOption = async (orderNo:any) => {
+    ExerciseOption = async () => {
       const { ethereum } = window;
       if (ethereum) {
         
         const provider = new ethers.providers.Web3Provider(ethereum);
         const signer = provider.getSigner();
 
-        const factoryContract = new ethers.Contract(factoryAddress, factoryABI, signer);
-        await factoryContract.exerciseOption(tokenAddress[this.state.token],ethers.utils.parseEther(this.state.amountOptions), this.state.orderNo)
+        const factoryContract = new ethers.Contract(loanFactory, loanABI, signer);
+        await factoryContract.repayLoan(tokenAddress[this.state.token], this.state.orderNo, true)
       }else{
         console.log("Ethereum object does not exist");
       }
@@ -251,29 +251,28 @@ class BoxWindow extends React.Component<Props> {
             console.log("Ethereum object does not exist");
           }
       }
-      buyAntiOption = async (orderNo:any) => {
+      buyAntiOption = async () => {
         const { ethereum } = window;
         if (ethereum) {
           //console.log(this.state.strikePriceOption)
           const provider = new ethers.providers.Web3Provider(ethereum);
           const signer = provider.getSigner();
   
-          const factoryContract = new ethers.Contract(factoryAddress, factoryABI, signer);
-          const payFee = BigNumber.from(this.state.fee).mul(this.state.amountOptions)
-          await factoryContract.buyOptions(tokenAddress[this.state.token],ethers.utils.parseEther(this.state.amountOptions), this.state.orderNo,{ value: payFee })
-        }else{
+          const factoryContract = new ethers.Contract(loanFactory, loanABI, signer);
+          const pay_plus_Fee = ((BigNumber.from(this.state.fee).mul(this.state.amountOptions)).add(ethers.utils.parseEther(this.state.amountOptions))).toString()
+            await factoryContract.createBasicLoan(tokenAddress[this.state.token], this.state.orderNo, false, { value: pay_plus_Fee })        }else{
           console.log("Ethereum object does not exist");
         }
       }
-      ExerciseAntiOption = async (orderNo:any) => {
+      ExerciseAntiOption = async () => {
         const { ethereum } = window;
         if (ethereum) {
           
           const provider = new ethers.providers.Web3Provider(ethereum);
           const signer = provider.getSigner();
   
-          const factoryContract = new ethers.Contract(factoryAddress, factoryABI, signer);
-          await factoryContract.exerciseAntiOption(tokenAddress[this.state.token],ethers.utils.parseEther(this.state.amountOptions), this.state.orderNo)
+          const factoryContract = new ethers.Contract(loanFactory, loanABI, signer);
+          await factoryContract.repayLoan(tokenAddress[this.state.token], this.state.orderNo, false)
         }else{
           console.log("Ethereum object does not exist");
         }
@@ -359,11 +358,11 @@ class BoxWindow extends React.Component<Props> {
             <main className={styles.main}>
               <div className='bg-blue-900 rounded-lg '>
                 {
-                this.state.optionTab === "Buy" ? 
+                this.state.optionTab === "Lend" ? 
                   <div>
                     <ul className="flex flex-wrap text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:border-gray-700 dark:text-gray-400">
                       <li className="">
-                          <a onClick={() => this.setState({optionTab:"Buy"})} aria-current="page" className="inline-block cursor-pointer p-4 text-blue-600 bg-gray-100 rounded-t-lg active dark:bg-gray-800 dark:text-blue-500">Loan Options</a>
+                          <a onClick={() => this.setState({optionTab:"Lend"})} aria-current="page" className="inline-block cursor-pointer p-4 text-blue-600 bg-gray-100 rounded-t-lg active dark:bg-gray-800 dark:text-blue-500">Loan Options</a>
                       </li>
                       <li className="ml-9">
                           <a onClick={() => this.setState({optionTab:"Exercise"})} className="inline-block cursor-pointer p-4 rounded-t-lg hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-300">Exercise Loan Option</a>
@@ -427,14 +426,14 @@ class BoxWindow extends React.Component<Props> {
                               focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none
                             "
                             id="exampleText0"
-                            placeholder="Amount of Options to Buy"
+                            placeholder="Amount of Options to Lend"
                             onChange={(e)=>this.changeAmounts(e.target.value)}
                           />
                         </div>
                       </div>
                       <br></br>
                       <a onClick={this.props.option === "Calls" ? this.buyOption:this.buyAntiOption} className="cursor-pointer inline-flex items-center py-2 px-3 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                          Buy Option
+                          Lend Option
                           <svg className="ml-2 -mr-1 w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
                       </a>
                       <button type="button" onClick={() => this.approveToken()} className={this.state.needApprove ?
@@ -449,7 +448,7 @@ class BoxWindow extends React.Component<Props> {
                   <div>
                     <ul className="flex flex-wrap text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:border-gray-700 dark:text-gray-400">
                       <li className="mr-2">
-                          <a onClick={() => this.setState({optionTab:"Buy"})} aria-current="page" className="inline-block cursor-pointer p-4 rounded-t-lg hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-300">Buy Option</a>
+                          <a onClick={() => this.setState({optionTab:"Lend"})} aria-current="page" className="inline-block cursor-pointer p-4 rounded-t-lg hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-300">Lend Option</a>
                       </li>
                       <li className="mr-2">
                           <a onClick={() => this.setState({optionTab:"Exercise"})} className="inline-block cursor-pointer p-4 text-blue-600 bg-gray-100 rounded-t-lg active dark:bg-gray-800 dark:text-blue-500">Exercise Option</a>
