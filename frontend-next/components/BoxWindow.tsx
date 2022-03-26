@@ -348,7 +348,7 @@ class BoxWindow extends React.Component<Props> {
                   
                     <div className="p-6 w-auto bg-white border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700">
                       <a href="#">
-                          <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Buy BTC Options<span className={optionClassName}>{this.props.option.toUpperCase()}</span>  </h5>
+                          <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Buy {this.props.tokenLabel} Options<span className={optionClassName}>{this.props.option.toUpperCase()}</span>  </h5>
                       </a>
                       <br></br>
                       {/* Price Dropdown menu */}
