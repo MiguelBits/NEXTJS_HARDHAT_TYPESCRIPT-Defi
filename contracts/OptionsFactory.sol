@@ -15,8 +15,8 @@ contract OptionsFactory {
     mapping(address => address) public priceFeedOracle;     //price Oracle address of underlyingtokens address
 
     event createOptions(address indexed _underlyingToken);
-    event buyOption(address indexed buyer, uint amount);
-    event exercisedOption(address indexed _underlyingToken, uint _amount);
+    event buyOption(address indexed buyer, uint amount, address _underlyingToken);
+    event exercisedOption(address indexed _underlyingToken, uint _amount, address _underlyingToken);
 
     uint private _feePolicy;
 
@@ -121,7 +121,7 @@ contract OptionsFactory {
         //send desired amount of options
         Option.transfer(msg.sender, _amount);
         
-        emit buyOption(msg.sender, _amount);
+        emit buyOption(msg.sender, _amount, _underlyingToken);
     }
 
     //exercise options
@@ -150,9 +150,9 @@ contract OptionsFactory {
         my_underlyingToken.transfer(msg.sender, _amount.div(10e18).mul(priceNow));
 
 
-        emit exercisedOption(_underlyingToken, _amount);
+        emit exercisedOption(_underlyingToken, _amount,_underlyingToken);
     }
-    
+
     function NotExerciseOption(address _underlyingToken, uint _amount, uint _orderNumber) public{
         require(allTokens[_underlyingToken].length > 0,"There are no options for this token");
 
