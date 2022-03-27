@@ -3,6 +3,8 @@ import styles from '../styles/Home.module.css'
 import { ethers } from 'ethers';
 import {tokenAddress, tokenABI, factoryAddress, factoryABI, erc20ABI} from "../contracts_abi"
 import { FaEthereum } from "react-icons/fa";
+import Link from 'next/link';
+import LINK from '../pages/Calls/LINK';
 
 declare let window: any
 
@@ -200,20 +202,21 @@ export default class TopBar extends React.Component {
             </button>
           </div>
           <button className="absolute top-1 left-96 inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-pink-500 to-orange-400 group-hover:from-pink-500 group-hover:to-orange-400 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-pink-200 dark:focus:ring-pink-800">
-              <a href="https://faucet.avax-test.network/" target="_blank" className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+              <Link href="https://faucet.avax-test.network/" target="_blank" className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
                   Mint AVAX
-              </a>
+              </Link>
             </button>
             
-          <a href="/" className={styles.centerContainer}>
-            Dopex
+          <a className={styles.centerContainer}>
+            <Link href="/" >
             <img src={"https://raw.githubusercontent.com/mcruzvas/NEXTJS_HARDHAT_TYPESCRIPT-Defi/master/frontend-next/public/favicon.ico"} width={"40"} height={"20"} alt="dope"></img>
+            </Link>
           </a>
 
           <div className={styles.leftContainer}>
-            <a href="/">
+            <Link href="/">
               <svg className=" mt-2 w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
-            </a>
+            </Link>
             <button onClick={()=>this.mintToken("BTC")} className="ml-3 relative inline-flex items-center justify-center p-0.5 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800">
               <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
                 Mint BTC
