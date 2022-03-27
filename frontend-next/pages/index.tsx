@@ -2,7 +2,7 @@ import React from 'react'
 import Head from 'next/head'
 import styles from '../styles/Home.module.css'
 import { ethers } from 'ethers';
-import {tokenAddress, tokenABI, factoryAddress, factoryABI, erc20ABI} from "./contracts_abi"
+import {tokenAddress, tokenABI, factoryAddress, factoryABI, erc20ABI} from "../contracts_abi"
 import TopBar from "../components/TopBar"
 import { FaEthereum } from "react-icons/fa";
 
