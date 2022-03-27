@@ -3,7 +3,6 @@ import styles from '../styles/Home.module.css'
 import { ethers } from 'ethers';
 import {tokenAddress, tokenABI, factoryAddress, factoryABI, erc20ABI} from "../contracts_abi"
 import { FaEthereum } from "react-icons/fa";
-import Image from 'next/image'
 
 declare let window: any
 
@@ -208,7 +207,7 @@ export default class TopBar extends React.Component {
             
           <a href="/" className={styles.centerContainer}>
             Dopex
-            <Image src="/../public/favicon.ico" width="40" height="20" alt="dope"></Image>
+            <img src="/../public/favicon.ico" width="40" height="20" alt="dope"></img>
           </a>
 
           <div className={styles.leftContainer}>
