@@ -1,4 +1,4 @@
-export const tokenAddress = ["0xf51EFc18844A07ab2fC97BB2E74191A4d0BFd3Be","0x89B2413521615d7044EE19Bec0066aFE0C03dcbE"]
+export const tokenAddress = ["0x7FCF0E08A465bFFb9C032f26a59aCE3923265a16","0x666Ab89C604ef9c43E3c515e7c819CB60487d0Bf"]
 export const erc20ABI = [
   {
       "constant": true,
@@ -620,7 +620,7 @@ export const tokenABI = [
     "type": "function"
   }
 ]
-export const factoryAddress = "0xb9603AC67Db2bC1D7014c19306CaDA31EFa99Da5"
+export const factoryAddress = "0x0FCf37Cf7E8F0A06b16A1f7b9BAC6373048bFd9b"
 export const factoryABI = [
   {
     "inputs": [],
@@ -633,26 +633,7 @@ export const factoryABI = [
       {
         "indexed": true,
         "internalType": "address",
-        "name": "buyer",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "buyAntiOption",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "buyer",
+        "name": "_underlyingToken",
         "type": "address"
       },
       {
@@ -694,25 +675,6 @@ export const factoryABI = [
         "type": "uint256"
       }
     ],
-    "name": "exercisedAntiOption",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "_underlyingToken",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "_amount",
-        "type": "uint256"
-      }
-    ],
     "name": "exercisedOption",
     "type": "event"
   },
@@ -725,22 +687,7 @@ export const factoryABI = [
       },
       {
         "internalType": "uint256",
-        "name": "_strikePrice",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_strikeDeadline",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
         "name": "_amount",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "apy_ratio",
         "type": "uint256"
       },
       {
@@ -749,7 +696,7 @@ export const factoryABI = [
         "type": "uint256"
       }
     ],
-    "name": "activateAntiOption",
+    "name": "NotExerciseOption",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -818,30 +765,6 @@ export const factoryABI = [
         "type": "uint256"
       }
     ],
-    "name": "allAntiOptionTokens",
-    "outputs": [
-      {
-        "internalType": "contract OptionToken",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
     "name": "allOptionTokens",
     "outputs": [
       {
@@ -895,29 +818,6 @@ export const factoryABI = [
         "type": "uint256"
       }
     ],
-    "name": "buyAntiOptions",
-    "outputs": [],
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_underlyingToken",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_amount",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_orderNumber",
-        "type": "uint256"
-      }
-    ],
     "name": "buyOptions",
     "outputs": [],
     "stateMutability": "payable",
@@ -950,16 +850,11 @@ export const factoryABI = [
       },
       {
         "internalType": "uint256",
-        "name": "_amount",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_orderNumber",
+        "name": "_orderNo",
         "type": "uint256"
       }
     ],
-    "name": "exerciseAntiOption",
+    "name": "deleteOption",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -984,7 +879,7 @@ export const factoryABI = [
     ],
     "name": "exerciseOption",
     "outputs": [],
-    "stateMutability": "payable",
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -1028,151 +923,7 @@ export const factoryABI = [
         "type": "uint256"
       }
     ],
-    "name": "getAmountAntiOptions",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_underlyingToken",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "_who",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_orderNumber",
-        "type": "uint256"
-      }
-    ],
     "name": "getAmountOptions",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_token",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_orderNumber",
-        "type": "uint256"
-      }
-    ],
-    "name": "getAntiOptionAddress",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_token",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_orderNumber",
-        "type": "uint256"
-      }
-    ],
-    "name": "getAntiOptionApy",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_token",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_orderNumber",
-        "type": "uint256"
-      }
-    ],
-    "name": "getAntiOptionStrikeDeadline",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_token",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_orderNumber",
-        "type": "uint256"
-      }
-    ],
-    "name": "getAntiOptionStrikePrices",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_token",
-        "type": "address"
-      }
-    ],
-    "name": "getHowManyAntiOptions",
     "outputs": [
       {
         "internalType": "uint256",

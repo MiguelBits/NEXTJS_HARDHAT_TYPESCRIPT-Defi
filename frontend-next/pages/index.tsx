@@ -38,7 +38,6 @@ export default class Home extends React.Component {
     this.getHowManyOptions()
     this.getTVL()
     this.getAPYs_calls()
-    this.getAPYs_puts()
   }
   getHowManyOptions = async () => {
     const { ethereum } = window;
@@ -104,30 +103,6 @@ export default class Home extends React.Component {
       }
 
       this.setState({apys_calls:apys});
-
-    }else{
-      console.log("Ethereum object does not exist");
-    }
-  }
-  getAPYs_puts = async () => {
-    const { ethereum } = window;
-    if (ethereum) {
-      
-      const provider = new ethers.providers.Web3Provider(ethereum);
-      const signer = provider.getSigner();
-
-      let apys:any = [[]]
-
-      const factoryContract = new ethers.Contract(factoryAddress, factoryABI, signer);
-      for(let k = 0; k < this.state.tokens.length; k++){
-        for(let i = 0; i<=this.state.manyOptions[k]; i++){
-          await factoryContract.getAntiOptionApy(tokenAddress[k],i).then((result:any ) =>{
-            apys[k].push(result.toString())
-          })
-        }
-      }
-
-      this.setState({apys_puts:apys});
 
     }else{
       console.log("Ethereum object does not exist");
