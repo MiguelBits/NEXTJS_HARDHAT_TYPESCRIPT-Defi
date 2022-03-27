@@ -47,7 +47,7 @@ const main = async(): Promise<any> => {
   console.log("\nDealing Token1\n")
   //ROUND 0
   let strikePrice = "16000000000000000000"
-  let supplyOptions = "5000000000000000000"
+  let supplyOptions = "20000000000000000000"
   let roundOption = 0; 
   let timestamp = Math.round(new Date().getTime() / 1000); //get timestamp for now
   timestamp += 3600*24; //now + 24h
@@ -56,12 +56,12 @@ const main = async(): Promise<any> => {
   console.log("\nRound: "+roundOption)
 
   console.log("Approving Token... to activate option and fund factory...")
-  txn = await tokenizer.approve(optionsFactory.address,supplyOptions)//5 ether
+  txn = await tokenizer.approve(optionsFactory.address,supplyOptions)
   txn.wait()
   console.log("Approved\n")
   console.log("Activate Option...")
 
-  txn = await optionsFactory.activateOption(tokenizer.address,strikePrice,timestamp,supplyOptions, apy_ratio,roundOption)//strike price 3ether, fund with 5ether, 20%ratio
+  txn = await optionsFactory.activateOption(tokenizer.address,strikePrice,timestamp,supplyOptions, apy_ratio,roundOption)
   txn.wait()
   console.log("Active!\n")
   
@@ -93,11 +93,11 @@ const main = async(): Promise<any> => {
   console.log("Added")
 
   console.log("Approving Token... to activate option and fund factory...")
-  txn = await tokenizer.approve(optionsFactory.address,supplyOptions)//5 ether
+  txn = await tokenizer.approve(optionsFactory.address,supplyOptions)
   txn.wait()
   console.log("Approved\n")
   console.log("Activate Option...")
-  txn = await optionsFactory.activateOption(tokenizer.address,strikePrice,timestamp,supplyOptions, apy_ratio,roundOption)//strike price 3ether, fund with 5ether, 20%ratio
+  txn = await optionsFactory.activateOption(tokenizer.address,strikePrice,timestamp,supplyOptions, apy_ratio,roundOption)
   txn.wait()
   console.log("Active!\n")
   
@@ -127,12 +127,12 @@ const main = async(): Promise<any> => {
   console.log("Added")
 
   console.log("Approving Token... to activate option and fund factory...")
-  txn = await tokenizer.approve(optionsFactory.address,supplyOptions)//5 ether
+  txn = await tokenizer.approve(optionsFactory.address,supplyOptions)
   txn.wait()
   console.log("Approved")
   console.log("Activate Option...")
 
-  txn = await optionsFactory.activateOption(tokenizer.address,strikePrice,timestamp,supplyOptions, apy_ratio,roundOption)//strike price 3ether, fund with 5ether, 20%ratio
+  txn = await optionsFactory.activateOption(tokenizer.address,strikePrice,timestamp,supplyOptions, apy_ratio,roundOption)
   txn.wait()
   console.log("Active!")
 
@@ -149,6 +149,7 @@ const main = async(): Promise<any> => {
   //token2 options
   //ROUND 0
   roundOption = 0;
+  console.log("\nRound2: "+roundOption)
   let timestamp2 = Math.round(new Date().getTime() / 1000); //get timestamp for now
   timestamp2 += 3600*12; //now + 24h
   let apy_ratio2 = 40;
@@ -159,11 +160,11 @@ const main = async(): Promise<any> => {
   txn.wait()
 
   console.log("Approving Token2... to activate option and fund factory...")
-  await tokenizer2.approve(optionsFactory.address,supplyOptions2)//5 ether
+  await tokenizer2.approve(optionsFactory.address,supplyOptions2)
   console.log("Approved")
 
   console.log("Activate 2 Option")
-  txn = await optionsFactory.activateOption(tokenizer2.address,strikePrice2,timestamp2,supplyOptions2, apy_ratio2,roundOption)//strike price 3ether, fund with 5ether, 40%ratio
+  txn = await optionsFactory.activateOption(tokenizer2.address,strikePrice2,timestamp2,supplyOptions2, apy_ratio2,roundOption)
   txn.wait()
   console.log("Active 2 Option")
 
@@ -178,6 +179,7 @@ const main = async(): Promise<any> => {
   console.log("Factory => Underlying Token Balance " + factoryTokenBalance2.toString())
   //ROUND 1
   roundOption +=1 ;
+  console.log("\nRound2: "+roundOption)
   timestamp2 = Math.round(new Date().getTime() / 1000); //get timestamp for now
   timestamp2 += 3600*12; //now + 24h
   apy_ratio2 = 40;
@@ -190,11 +192,11 @@ const main = async(): Promise<any> => {
   console.log("Added")
 
   console.log("Approving Token2... to activate option and fund factory...")
-  await tokenizer2.approve(optionsFactory.address,supplyOptions2)//5 ether
+  await tokenizer2.approve(optionsFactory.address,supplyOptions2)
   console.log("Approved")
 
   console.log("Activate 2 Option")
-  txn = await optionsFactory.activateOption(tokenizer2.address,strikePrice2,timestamp2,supplyOptions2, apy_ratio2,roundOption)//strike price 3ether, fund with 5ether, 40%ratio
+  txn = await optionsFactory.activateOption(tokenizer2.address,strikePrice2,timestamp2,supplyOptions2, apy_ratio2,roundOption)
   txn.wait()
   console.log("Active 2 Option")
 
@@ -210,6 +212,7 @@ const main = async(): Promise<any> => {
 
   //ROUND 2
   roundOption +=1 ;
+  console.log("\nRound2: "+roundOption)
   timestamp2 = Math.round(new Date().getTime() / 1000); //get timestamp for now
   timestamp2 += 3600*12; //now + 24h
   apy_ratio2 = 40;
@@ -225,11 +228,11 @@ const main = async(): Promise<any> => {
   txn.wait()
 
   console.log("Approving Token2... to activate option and fund factory...")
-  await tokenizer2.approve(optionsFactory.address,supplyOptions2)//5 ether
+  await tokenizer2.approve(optionsFactory.address,supplyOptions2)
   console.log("Approved")
 
   console.log("Activate 2 Option")
-  txn = await optionsFactory.activateOption(tokenizer2.address,strikePrice2,timestamp2,supplyOptions2, apy_ratio2,roundOption)//strike price 3ether, fund with 5ether, 40%ratio
+  txn = await optionsFactory.activateOption(tokenizer2.address,strikePrice2,timestamp2,supplyOptions2, apy_ratio2,roundOption)
   txn.wait()
   console.log("Active 2 Option")
 

@@ -95,7 +95,7 @@ export default class Home extends React.Component {
       for(let k = 0; k < this.state.tokens.length; k++){
         for(let i = 0; i<=this.state.manyOptions[k]; i++){
           //console.log(tokenAddress[k])
-          await factoryContract.getOptionApy(tokenAddress[k],i).then((result:any ) =>{
+          let txn = await factoryContract.getOptionApy(tokenAddress[k],i).then((result:any ) =>{
             //console.log("shit "+result.toString())
             apys[k].push(result.toString())
           })

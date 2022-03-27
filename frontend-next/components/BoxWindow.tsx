@@ -12,6 +12,13 @@ type Props = {
     option:string;
 }
 
+interface Transactions {
+  Asset:string;
+  Amount:any;
+  StrikePrice:any;
+  StrikeDeadline:any;
+}
+
 declare let window: any
 class BoxWindow extends React.Component<Props> {
     constructor(props: Props){
@@ -33,7 +40,12 @@ class BoxWindow extends React.Component<Props> {
       howmany: 0,
       orderNo: 0,
       needApproveToken: true,
-      needApproveExerciseToken: true,
+
+      transactionsToken: [],
+      transactionsAmount: [],
+      transactionsOrder: [],
+      transactionsPrice: [],
+      transactionsDeadline: [],
 
     }
     
@@ -42,6 +54,7 @@ class BoxWindow extends React.Component<Props> {
             this.getHowManyOptions()   
             this.getStrikes()
             this.getBalanceOptions()  
+            this.getTransactions()
   
         
     };
@@ -88,6 +101,35 @@ class BoxWindow extends React.Component<Props> {
             this.setState({strikeDeadlineOption:strikeDeadlineOptions});
           }
     
+        }else{
+          console.log("Ethereum object does not exist");
+        }
+    }
+    getStrikesOf = async (orderNo:any) => {
+      const { ethereum } = window;
+        if (ethereum) {
+          
+          const provider = new ethers.providers.Web3Provider(ethereum);
+          const signer = provider.getSigner();
+    
+          let strikePriceOptions:any = this.state.transactionsPrice
+          let strikeDeadlineOptions:any = this.state.transactionsDeadline
+
+          const factoryContract = new ethers.Contract(factoryAddress, factoryABI, signer);
+          //console.log("this many: "+this.state.howmany)
+
+          await factoryContract.getOptionStrikePrices(tokenAddress[this.state.token],orderNo).then((result:any ) =>{
+            strikePriceOptions.push(ethers.utils.formatEther(result).slice(0,6))
+            //console.log("fking shit "+ethers.utils.formatEther(result).slice(0,6))
+          })
+          await factoryContract.getOptionStrikeDeadline(tokenAddress[this.state.token],orderNo).then((result:any ) =>{
+            strikeDeadlineOptions.push(result.toString())
+          })
+                    
+          this.setState({strikePriceOption:strikePriceOptions});
+    
+          this.setState({strikeDeadlineOption:strikeDeadlineOptions});
+
         }else{
           console.log("Ethereum object does not exist");
         }
@@ -154,7 +196,9 @@ class BoxWindow extends React.Component<Props> {
           const signer = provider.getSigner();
 
           const tokenContract = new ethers.Contract(tokenAddress[this.state.token], erc20ABI, signer);
-          await tokenContract.approve(factoryAddress,ethers.utils.parseEther(this.state.amountOptions))
+          let txn = await tokenContract.approve(factoryAddress,ethers.utils.parseEther(this.state.amountOptions))
+          txn.wait()
+          window.location.reload(false);
         }else{
           console.log("Ethereum object does not exist");
         }
@@ -187,17 +231,21 @@ class BoxWindow extends React.Component<Props> {
           
           const tokenContract = new ethers.Contract(tokenAddress[this.state.token], erc20ABI, signer);
           tokenContract.allowance(accounts[0],factoryAddress).then((result:any)=>{
-            if(ethers.utils.formatEther(result.toString()) >= this.state.amountOptions){
-              return false
+            //console.log(ethers.utils.formatEther(result.toString()) + "<=" + this.state.amountOptions)
+            if(parseInt(ethers.utils.formatEther(result.toString())) < parseInt(this.state.amountOptions)){
+              //console.log("first")
+              this.setState({needApproveToken:true})
             }
             else{
-              return true
+              //console.log("second")
+              this.setState({needApproveToken:false})
             }
           })
         }else{
           console.log("Ethereum object does not exist");
         }
       }
+      /*
       needApproveExerciseToken = async() => {
         const { ethereum } = window;
           if (ethereum) {
@@ -225,7 +273,27 @@ class BoxWindow extends React.Component<Props> {
             console.log("Ethereum object does not exist");
           }
       }
+      */
 
+    getTransactions = async () => {
+      const { ethereum } = window;
+      if (ethereum) {
+        
+        const provider = new ethers.providers.Web3Provider(ethereum);
+        const signer = provider.getSigner();
+
+        const factoryContract = new ethers.Contract(factoryAddress,factoryABI,signer);
+        factoryContract.on("buyOption", (token, amount, orderNo) => {
+          this.state.transactionsToken.push(token)
+          this.state.transactionsAmount.push(ethers.utils.formatEther(amount))
+          this.state.transactionsOrder.push(orderNo.toString())
+          this.getStrikesOf(orderNo.toString())
+        })
+        
+      }else{
+        console.log("Ethereum object does not exist");
+      }
+    }
     parseDate = (result:any) => {
       var a = new Date(result * 1000);
       var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -245,7 +313,7 @@ class BoxWindow extends React.Component<Props> {
     }
     changeAmounts = (value:any) => {
       this.setState({amountOptions:value})
-      this.setState({needApproveToken:this.needApproveToken()})
+      this.needApproveToken()
     }
     checkCallOrPut =() => {
         if(this.props.option == "Calls"){
@@ -266,7 +334,53 @@ class BoxWindow extends React.Component<Props> {
           </Head>
           <TopBar></TopBar>
             <main className={styles.main}>
-              <div className='bg-blue-900 rounded-lg '>
+                <div className="absolute left-10 top-20 overflow-x-auto shadow-md sm:rounded-lg">
+                  <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                      <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                          <tr>
+                              <th scope="col" className="px-6 py-3">
+                                  Recent Transactions of
+                              </th>
+                              <th scope="col" className="px-6 py-3">
+                                  Amount
+                              </th>
+                              <th scope="col" className="px-6 py-3">
+                                  Strike Price
+                              </th>
+                              <th scope="col" className="px-6 py-3">
+                                  Strike Deadline
+                              </th>
+                              <th scope="col" className="px-6 py-3">
+                                  <span className="sr-only">Inspect</span>
+                              </th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                        {this.state.transactionsToken.map((item,i)=>{
+                          return(
+                            <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                              <th scope="row" className="px-6 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap">
+                                  {item}
+                              </th>
+                              <td className="px-6 py-4">
+                                  {this.state.transactionsAmount[i]}
+                              </td>
+                              <td className="px-6 py-4">
+                                  {this.state.transactionsPrice[i]}
+                              </td>
+                              <td className="px-6 py-4">
+                                  {this.state.transactionsDeadline[i]}
+                              </td>
+                              <td className="px-6 py-4 text-right">
+                                  <a href="#" className="font-medium text-blue-600 dark:text-blue-500 hover:underline">Inspect</a>
+                              </td>
+                            </tr>
+                          )
+                        })}                          
+                      </tbody>
+                  </table>
+              </div>
+              <div className='bg-blue-900 rounded-lg absolute top-20 right-20'>
                 {
                 this.state.optionTab === "Buy" ? 
                   <div>
