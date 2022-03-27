@@ -207,7 +207,7 @@ export default class TopBar extends React.Component {
             
           <a href="/" className={styles.centerContainer}>
             Dopex
-            <img src="/../public/favicon.ico" width="40" height="20" alt="dope"></img>
+            <img src={"https://raw.githubusercontent.com/mcruzvas/NEXTJS_HARDHAT_TYPESCRIPT-Defi/master/frontend-next/public/favicon.ico"} width={"40"} height={"20"} alt="dope"></img>
           </a>
 
           <div className={styles.leftContainer}>

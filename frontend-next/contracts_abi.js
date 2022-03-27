@@ -1,4 +1,4 @@
-export const tokenAddress = ["0xc0451B541B4C9456B6FF33C8fe76b6308bDCd6BE","0x3030C051B2BEe4b01bcDe42ae46e44aFc1D19B7B"]
+export const tokenAddress = ["0x196622feE7D1a0ed8785B77bd54D5d29d2fdF562","0x524f20Da24DC579dBB036E591FEfAa6f5D28B1d4"]
 export const erc20ABI = [
   {
       "constant": true,
@@ -539,7 +539,7 @@ export const tokenABI = [
     "type": "function"
   }
 ]
-export const factoryAddress = "0xbEF8435A0Cd8705E7Ed701080B6FCeE1A4b889F3"
+export const factoryAddress = "0xE7c67a4b05Be71493e79Bd72c6b6eb359f40E762"
 export const factoryABI = [
   {
     "inputs": [],
