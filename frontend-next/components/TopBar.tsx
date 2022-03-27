@@ -4,7 +4,6 @@ import { ethers } from 'ethers';
 import {tokenAddress, tokenABI, factoryAddress, factoryABI, erc20ABI} from "../contracts_abi"
 import { FaEthereum } from "react-icons/fa";
 import Link from 'next/link';
-import LINK from '../pages/Calls/LINK';
 
 declare let window: any
 
