@@ -10,4 +10,9 @@ npm install --save-dev @openzeppelin/hardhat-upgrades
 npm install --save-dev @nomiclabs/hardhat-ethers ethers
 
 ```
-cd frontend-next && npm start
+
+npx hardhat run scripts/deployOptions.ts --network fuji
+
+cd frontend-next && npm run dev
+
+![image](https://user-images.githubusercontent.com/15989933/160285160-45456a8a-3adf-4b84-8d92-a6a6e2e345fd.png)
