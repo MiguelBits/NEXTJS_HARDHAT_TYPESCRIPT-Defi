@@ -3,7 +3,7 @@ import { UnderlyingToken__factory, OptionsFactory__factory } from "../typechain"
 
 const main = async(): Promise<any> => {
 
-  const fee = ethers.utils.parseEther("0.1").toString()
+  const fee = ethers.utils.parseEther("0.1")
 
   const priceOracle = "0x378E78509a907B1Ec5c24d9f0243BD39f7A7b007"
   const priceOracle2 = "0xf4060f80f295b34e0C2471461ba43745Aeb186d6"
@@ -248,29 +248,33 @@ const main = async(): Promise<any> => {
   console.log("\nWill now buy options from factory\n")
 
   //Buy Option Simulation
-  /*
+/*
+  console.log("Approving Token... to activate option and fund factory...")
+  txn = await tokenizer.approve(optionsFactory.address,"1000000000000000000")
+  txn.wait()
+  console.log("Approved")
   console.log("Sending ether to pay premium on buy Option...")
   await optionsFactory.buyOptions(tokenizer.address,"1000000000000000000", { value: fee }) //buyOptions 1ether + pay premium
-  optionBalance = await optionsFactory.getAmountOptions(tokenizer.address,optionsFactory.address)
+  optionBalance = await optionsFactory.getAmountOptions(tokenizer.address,optionsFactory.address,0)
   console.log("Factory => Option Balance: "+optionBalance.toString())
 
 
 
-  let MyOptions = await optionsFactory.getAmountOptions(tokenizer.address,signers[0].address)
+  let MyOptions = await optionsFactory.getAmountOptions(tokenizer.address,signers[0].address,0)
 
   console.log("My Option Balance: "+MyOptions.toString())
 
   let MyTokenPrice = await optionsFactory.getLatestPrice(tokenizer.address);
   console.log("The Token is valued at: "+ MyTokenPrice.toString())
-*/
-/*
+
+
   console.log("\nWill now Exercise Options\n")
   //exercise Option
-  await optionsFactory.exerciseOption(tokenizer.address,"500000000000000000", { value: strikePrice }) // exercise 0.5ether of token, send ether value to pay it
+  await optionsFactory.exerciseOption(tokenizer.address,"500000000000000000",0) 
   
-  MyOptions = await optionsFactory.getAmountOptions(tokenizer.address,signers[0].address)
+  MyOptions = await optionsFactory.getAmountOptions(tokenizer.address,signers[0].address,0)
   console.log("My Option Balance: "+MyOptions.toString())
-  optionBalance = await optionsFactory.getAmountOptions(tokenizer.address,optionsFactory.address)
+  optionBalance = await optionsFactory.getAmountOptions(tokenizer.address,optionsFactory.address,0)
   console.log("Factory => Option Balance: "+optionBalance.toString())
 
   await optionsFactory.withdrawFees()

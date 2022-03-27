@@ -137,8 +137,7 @@ contract OptionsFactory {
         uint strikePrice = Option.getStrikePrice();
         uint strikeDeadline = Option.getStrikeDeadline();
 
-        require(strikeDeadline <= block.timestamp, "Time Options: NOT EXPIRED");
-        
+        require(strikeDeadline.sub(3600) <= block.timestamp &&  block.timestamp <=  strikeDeadline, "Time Options: Not in exercise window!");        
         //price calculus
         uint priceNow = uint(getLatestPrice(_underlyingToken));
         
@@ -146,8 +145,9 @@ contract OptionsFactory {
 
         //transfer token exercised
         Option.burnOption(msg.sender, _amount);
-
-        my_underlyingToken.transfer(msg.sender, _amount.div(10e18).mul(priceNow));
+        uint priceRatio = (priceNow.sub(strikePrice).mul(100)).div(priceNow); // percentage difference
+        uint totalAmount = (_amount.div(100).mul(priceRatio)).add(_amount);    //add the difference
+        my_underlyingToken.transfer(msg.sender, totalAmount);
 
 
         emit exercisedOption(_underlyingToken, _amount, _orderNumber);
