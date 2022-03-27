@@ -111,7 +111,7 @@ contract OptionsFactory {
         require(my_underlyingToken.balanceOf(address(this)) >= _amount, "Not enough balance in Factory");
         require(Option.balanceOf(address(this)) >= _amount, "Not enough balance in Factory");
 
-        //pay token == to amount locked
+        //pay token => to amount locked
         my_underlyingToken.transferFrom(msg.sender, address(this), _amount);
 
         //approve to send to sender
@@ -125,7 +125,7 @@ contract OptionsFactory {
     }
 
     //exercise options
-    function exerciseOption(address _underlyingToken, uint _amount, uint _orderNumber) public payable{
+    function exerciseOption(address _underlyingToken, uint _amount, uint _orderNumber) public{
         require(allTokens[_underlyingToken].length > 0,"There are no options for this token");
 
         //get Tokens
@@ -142,10 +142,7 @@ contract OptionsFactory {
         //price calculus
         uint priceNow = uint(getLatestPrice(_underlyingToken));
         
-        require(priceNow <= strikePrice, "Restricted from exercising losing position in Option!");
-
-        //approve token
-        my_underlyingToken.approve(msg.sender, _amount);
+        require(priceNow >= strikePrice, "Restricted from exercising losing position in Option!");
 
         //transfer token exercised
         Option.burnOption(msg.sender, _amount);
@@ -154,6 +151,19 @@ contract OptionsFactory {
 
 
         emit exercisedOption(_underlyingToken, _amount);
+    }
+    
+    function NotExerciseOption(address _underlyingToken, uint _amount, uint _orderNumber) public{
+        require(allTokens[_underlyingToken].length > 0,"There are no options for this token");
+
+        //get Tokens
+        underlyingToken my_underlyingToken = allTokens[_underlyingToken][0];
+        OptionToken Option = allOptionTokens[_underlyingToken][_orderNumber];
+
+        //transfer token not exercised
+        Option.burnOption(msg.sender, _amount);
+
+        my_underlyingToken.transfer(msg.sender, _amount);
     }
 
     //Getters
