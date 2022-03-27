@@ -25,18 +25,15 @@ export default class TopBar extends React.Component {
     },
 
     tokens: ["BTC", "LINK"],
-    //optionsBalance: [[]],
-    //antiOptionsBalance: [[]],
+
     prices: [],
     
     }
     
     componentDidMount = () => {
         this.checkWalletIsConnected()
-        //this.balanceToken()
         this.priceToken()
-        //this.getOptionsAmount()
-        //this.getAntiOptionsAmount()
+
     };
     handleNetworkSwitch = async () => {
         try {
@@ -177,26 +174,7 @@ export default class TopBar extends React.Component {
           console.log("Ethereum object does not exist");
         }
     }
-    getAntiOptionsAmount = async () =>{
-      const { ethereum } = window;
-        if (ethereum) {
-          
-          const provider = new ethers.providers.Web3Provider(ethereum);
-          const signer = provider.getSigner();
-          const accounts = await provider.listAccounts();
-
-          let balances:any = []
-          for(let i=0; i<this.state.tokens.length;i++){
-            var factoryContract = new ethers.Contract(factoryAddress, factoryABI, signer);
-            factoryContract.getAmountAntiOptions(tokenAddress[i], accounts[0]).then((balance: Promise<String>) =>{
-              balances.push(ethers.utils.formatEther(balance.toString()))
-            })
-          }
-          this.setState({optionsBalance:balances})
-        }else{
-          console.log("Ethereum object does not exist");
-        }
-    }
+    
     render() {
       return (
         <div>
@@ -242,23 +220,7 @@ export default class TopBar extends React.Component {
                 Mint LINK
               </span>
             </button>
-            {/*
-            Balance:
-              Calls:
-              <div className="white">
-                {this.state.optionsBalance[0]}
-              </div>
-              <div className="white">
-                {this.state.optionsBalance[1]}
-              </div>
-              Puts:
-              <div className="white">
-                {this.state.antiOptionsBalance[0]}
-              </div>
-              <div className="white">
-                {this.state.antiOptionsBalance[1]}
-              </div>
-              */}
+            
           </div>
 
         </div>
