@@ -34,6 +34,8 @@ class BoxWindow extends React.Component<Props> {
       orderNo: 0,
       needApproveToken: true,
 
+      tokenBalance: 0,
+
       transactionsToken: [],
       transactionsAmount: [],
       transactionsOrder: [],
@@ -311,12 +313,14 @@ class BoxWindow extends React.Component<Props> {
         
         const provider = new ethers.providers.Web3Provider(ethereum);
         const signer = provider.getSigner();
-
+        let txnToken:any[] = this.state.transactionsToken
+        let txnAmount:any[] = this.state.transactionsAmount
+        let txnOrder:any[] = this.state.transactionsOrder
         const factoryContract = new ethers.Contract(factoryAddress,factoryABI,signer);
         factoryContract.on("buyOption", (token, amount, orderNo) => {
-          this.state.transactionsToken.push(token)
-          this.state.transactionsAmount.push(ethers.utils.formatEther(amount))
-          this.state.transactionsOrder.push(orderNo.toString())
+          txnToken.push(token)
+          txnAmount.push(ethers.utils.formatEther(amount))
+          txnOrder.push(orderNo.toString())
           this.getStrikesOf(orderNo.toString())
         })
         
